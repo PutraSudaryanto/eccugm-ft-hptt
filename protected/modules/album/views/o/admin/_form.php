@@ -107,6 +107,62 @@
 						<?php echo $form->error($model,'body'); ?>
 					</div>
 				</div>
+		
+				<?php if(!$model->isNewRecord || ($model->isNewRecord && $setting->meta_keyword != '')) {?>
+				<div class="clearfix">
+					<?php echo $form->labelEx($model,'keyword'); ?>
+					<div class="desc">
+						<?php 
+						if(!$model->isNewRecord) {
+							//echo $form->textField($model,'keyword',array('maxlength'=>32,'class'=>'span-6'));
+							$url = Yii::app()->controller->createUrl('o/tag/add', array('type'=>'album'));
+							$album = $model->album_id;
+							$tagId = 'Albums_keyword';
+							$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
+								'model' => $model,
+								'attribute' => 'keyword',
+								'source' => Yii::app()->createUrl('globaltag/suggest'),
+								'options' => array(
+									//'delay '=> 50,
+									'minLength' => 1,
+									'showAnim' => 'fold',
+									'select' => "js:function(event, ui) {
+										$.ajax({
+											type: 'post',
+											url: '$url',
+											data: { album_id: '$album', tag_id: ui.item.id, tag: ui.item.value },
+											dataType: 'json',
+											success: function(response) {
+												$('form #$tagId').val('');
+												$('form #keyword-suggest').append(response.data);
+											}
+										});
+
+									}"
+								),
+								'htmlOptions' => array(
+									'class'	=> 'span-6',
+								),
+							));
+							echo $form->error($model,'keyword');
+						}?>
+						<div id="keyword-suggest" class="suggest clearfix">
+							<?php 
+							$arrKeyword = explode(',', $setting->meta_keyword);
+							foreach($arrKeyword as $row) {?>
+								<div class="d"><?php echo $row;?></div>
+							<?php }
+							if(!$model->isNewRecord) {
+								if($tag != null) {
+									foreach($tag as $key => $val) {?>
+									<div><?php echo $val->tag_relation->body;?><a href="<?php echo Yii::app()->controller->createUrl('o/tag/delete',array('id'=>$val->id,'type'=>'album'));?>" title="<?php echo Phrase::trans(173,0);?>"><?php echo Phrase::trans(173,0);?></a></div>
+								<?php }
+								}
+							}?>
+						</div>
+					</div>
+				</div>
+				<?php }?>
 
 			</div>
 

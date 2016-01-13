@@ -2,7 +2,7 @@
 /**
  * TagController
  * @var $this TagController
- * @var $model ArticleTag
+ * @var $model AlbumTag
  * @var $form CActiveForm
  * version: 0.0.1
  * Reference start
@@ -17,8 +17,8 @@
  *	performAjaxValidation
  *
  * @author Putra Sudaryanto <putra.sudaryanto@gmail.com>
- * @copyright Copyright (c) 2012 Ommu Platform (ommu.co)
- * @link https://github.com/oMMu/Ommu-Articles
+ * @copyright Copyright (c) 2015 Ommu Platform (ommu.co)
+ * @link https://github.com/oMMu/Ommu-Photo-Albums
  * @contect (+62)856-299-4114
  *
  *----------------------------------------------------------------------------------------------------------
@@ -71,7 +71,7 @@ class TagController extends Controller
 	{
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('index'),
+				'actions'=>array('index','view'),
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -108,10 +108,10 @@ class TagController extends Controller
 	 */
 	public function actionManage() 
 	{
-		$model=new ArticleTag('search');
+		$model=new AlbumTag('search');
 		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['ArticleTag'])) {
-			$model->attributes=$_GET['ArticleTag'];
+		if(isset($_GET['AlbumTag'])) {
+			$model->attributes=$_GET['AlbumTag'];
 		}
 
 		$columnTemp = array();
@@ -123,46 +123,39 @@ class TagController extends Controller
 			}
 		}
 		$columns = $model->getGridColumn($columnTemp);
-		
-		if(isset($_GET['article'])) {
-			$article = Articles::model()->findByPk($_GET['article']);
-			$title = ': '.$article->title.' '.Phrase::trans(26062,1).' '.$article->user->displayname;
-		} else {
-			$title = '';
-		}
 
-		$this->pageTitle = Phrase::trans(26083,1).$title;
+		$this->pageTitle = 'Album Tags Manage';
 		$this->pageDescription = '';
 		$this->pageMeta = '';
 		$this->render('admin_manage',array(
 			'model'=>$model,
 			'columns' => $columns,
 		));
-	}
-
+	}	
+	
 	/**
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
 	public function actionAdd() 
 	{
-		$model=new ArticleTag;
+		$model=new AlbumTag;
 
 		// Uncomment the following line if AJAX validation is needed
 		$this->performAjaxValidation($model);
 
-		if(isset($_POST['article_id'], $_POST['tag_id'], $_POST['tag'])) {
-			$model->article_id = $_POST['article_id'];
+		if(isset($_POST['album_id'], $_POST['tag_id'], $_POST['tag'])) {
+			$model->album_id = $_POST['album_id'];
 			$model->tag_id = $_POST['tag_id'];
 			$model->body = $_POST['tag'];
 
 			if($model->save()) {
-				if(isset($_GET['type']) && $_GET['type'] == 'article')
-					$url = Yii::app()->controller->createUrl('delete',array('id'=>$model->id,'type'=>'article'));
+				if(isset($_GET['type']) && $_GET['type'] == 'album')
+					$url = Yii::app()->controller->createUrl('delete',array('id'=>$model->id,'type'=>'album'));
 				else 
 					$url = Yii::app()->controller->createUrl('delete',array('id'=>$model->id));
 				echo CJSON::encode(array(
-					'data' => '<div>'.$model->tag->body.'<a href="'.$url.'" title="'.Phrase::trans(173,0).'">'.Phrase::trans(173,0).'</a></div>',
+					'data' => '<div>'.$model->tag_relation->body.'<a href="'.$url.'" title="'.Phrase::trans(173,0).'">'.Phrase::trans(173,0).'</a></div>',
 				));
 			}
 		}
@@ -181,7 +174,7 @@ class TagController extends Controller
 			// we only allow deletion via POST request
 			if(isset($id)) {
 				$model->delete();
-				if(isset($_GET['type']) && $_GET['type'] == 'article') {
+				if(isset($_GET['type']) && $_GET['type'] == 'album') {
 					echo CJSON::encode(array(
 						'type' => 4,
 					));
@@ -189,22 +182,22 @@ class TagController extends Controller
 					echo CJSON::encode(array(
 						'type' => 5,
 						'get' => Yii::app()->controller->createUrl('manage'),
-						'id' => 'partial-article-tag',
-						'msg' => '<div class="errorSummary success"><strong>'.Phrase::trans(26082,1).'</strong></div>',
-					));
+						'id' => 'partial-album-tag',
+						'msg' => '<div class="errorSummary success"><strong>AlbumTag success deleted.</strong></div>',
+					));					
 				}
 			}
 
 		} else {
 			$this->dialogDetail = true;
-			if(isset($_GET['type']) && $_GET['type'] == 'article')
-				$url = Yii::app()->controller->createUrl('o/admin/edit', array('id'=>$model->article_id));
+			if(isset($_GET['type']) && $_GET['type'] == 'album')
+				$url = Yii::app()->controller->createUrl('o/admin/edit', array('id'=>$model->album_id));
 			else
 				$url = Yii::app()->controller->createUrl('manage');
 			$this->dialogGroundUrl = $url;
 			$this->dialogWidth = 350;
 
-			$this->pageTitle = Phrase::trans(26081,1);
+			$this->pageTitle = 'AlbumTag Delete.';
 			$this->pageDescription = '';
 			$this->pageMeta = '';
 			$this->render('admin_delete');
@@ -218,7 +211,7 @@ class TagController extends Controller
 	 */
 	public function loadModel($id) 
 	{
-		$model = ArticleTag::model()->findByPk($id);
+		$model = AlbumTag::model()->findByPk($id);
 		if($model===null)
 			throw new CHttpException(404, Phrase::trans(193,0));
 		return $model;
@@ -230,7 +223,7 @@ class TagController extends Controller
 	 */
 	protected function performAjaxValidation($model) 
 	{
-		if(isset($_POST['ajax']) && $_POST['ajax']==='article-tag-form') {
+		if(isset($_POST['ajax']) && $_POST['ajax']==='album-tag-form') {
 			echo CActiveForm::validate($model);
 			Yii::app()->end();
 		}

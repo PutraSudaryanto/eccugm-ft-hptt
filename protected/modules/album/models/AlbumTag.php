@@ -1,9 +1,9 @@
 <?php
 /**
- * ArticleTag
+ * AlbumTag
  * @author Putra Sudaryanto <putra.sudaryanto@gmail.com>
- * @copyright Copyright (c) 2012 Ommu Platform (ommu.co)
- * @link https://github.com/oMMu/Ommu-Articles
+ * @copyright Copyright (c) 2016 Ommu Platform (ommu.co)
+ * @link https://github.com/oMMu/Ommu-Photo-Albums
  * @contact (+62)856-299-4114
  *
  * This is the template for generating the model class of a specified table.
@@ -17,32 +17,33 @@
  *
  * --------------------------------------------------------------------------------------
  *
- * This is the model class for table "ommu_article_tag".
+ * This is the model class for table "ommu_album_tag".
  *
- * The followings are the available columns in table 'ommu_article_tag':
+ * The followings are the available columns in table 'ommu_album_tag':
  * @property string $id
- * @property string $article_id
+ * @property string $album_id
  * @property string $tag_id
  * @property string $creation_date
  * @property string $creation_id
  *
  * The followings are the available model relations:
- * @property OmmuArticles $article
+ * @property OmmuAlbums $album
  */
-class ArticleTag extends CActiveRecord
+class AlbumTag extends CActiveRecord
 {
 	public $defaultColumns = array();
 	public $body;
 	
 	// Variable Search
-	public $article_search;
+	public $album_search;
 	public $tag_search;
 	public $creation_search;
 
 	/**
 	 * Returns the static model of the specified AR class.
+	 * Please note that you should have this exact method in all your CActiveRecord descendants!
 	 * @param string $className active record class name.
-	 * @return ArticleTag the static model class
+	 * @return AlbumTag the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
@@ -54,7 +55,7 @@ class ArticleTag extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'ommu_article_tag';
+		return 'ommu_album_tag';
 	}
 
 	/**
@@ -65,14 +66,12 @@ class ArticleTag extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('article_id, tag_id', 'required'),
-			array('article_id, tag_id, creation_id', 'length', 'max'=>11),
-			array('creation_date, 
-				body', 'safe'),
+			array('album_id, tag_id', 'required'),
+			array('album_id, tag_id, creation_id', 'length', 'max'=>11),
 			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, article_id, tag_id, creation_date,
-				article_search, tag_search, creation_search', 'safe', 'on'=>'search'),
+			// @todo Please remove those attributes that should not be searched.
+			array('id, album_id, tag_id, creation_date, creation_id,
+				album_search, tag_search, creation_search', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -84,8 +83,8 @@ class ArticleTag extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'article' => array(self::BELONGS_TO, 'Articles', 'article_id'),
-			'tag' => array(self::BELONGS_TO, 'OmmuTags', 'tag_id'),
+			'album_relation' => array(self::BELONGS_TO, 'OmmuAlbums', 'album_id'),
+			'tag_relation' => array(self::BELONGS_TO, 'OmmuTags', 'tag_id'),
 			'creation_relation' => array(self::BELONGS_TO, 'Users', 'creation_id'),
 		);
 	}
@@ -96,46 +95,56 @@ class ArticleTag extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'id' => Phrase::trans(26080,1),
-			'article_id' => Phrase::trans(26000,1),
-			'tag_id' => Phrase::trans(26080,1),
-			'article_search' => Phrase::trans(26000,1),
-			'tag_search' => Phrase::trans(26080,1),
-			'creation_date' => Phrase::trans(26069,1),
+			'id' => 'ID',
+			'album_id' => 'Album',
+			'tag_id' => 'Tag',
+			'creation_date' => 'Creation Date',
+			'creation_id' => 'Creation',
+			'album_search' => 'Album',
+			'tag_search' => 'Tag',
 			'creation_search' => 'Creation',
 		);
 	}
-	
+
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+	 *
+	 * Typical usecase:
+	 * - Initialize the model fields with values from filter form.
+	 * - Execute this method to get CActiveDataProvider instance which will filter
+	 * models according to data in model fields.
+	 * - Pass data provider to CGridView, CListView or any similar widget.
+	 *
+	 * @return CActiveDataProvider the data provider that can return the models
+	 * based on the search/filter conditions.
 	 */
 	public function search()
 	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
+		// @todo Please modify the following code to remove attributes that should not be searched.
 
 		$criteria=new CDbCriteria;
 
-		$criteria->compare('t.id',$this->id);
-		if(isset($_GET['article'])) {
-			$criteria->compare('t.article_id',$_GET['article']);
-		} else {
-			$criteria->compare('t.article_id',$this->article_id);
-		}
-		$criteria->compare('t.tag_id',$this->tag_id);
+		$criteria->compare('t.id',strtolower($this->id),true);
+		if(isset($_GET['album']))
+			$criteria->compare('t.album_id',$_GET['album']);
+		else
+			$criteria->compare('t.album_id',$this->album_id);
+		$criteria->compare('t.tag_id',strtolower($this->tag_id),true);
 		if($this->creation_date != null && !in_array($this->creation_date, array('0000-00-00 00:00:00', '0000-00-00')))
 			$criteria->compare('date(t.creation_date)',date('Y-m-d', strtotime($this->creation_date)));
-		$criteria->compare('t.creation_id',$this->creation_id);
+		if(isset($_GET['creation']))
+			$criteria->compare('t.creation_id',$_GET['creation']);
+		else
+			$criteria->compare('t.creation_id',$this->creation_id);
 		
 		// Custom Search
 		$criteria->with = array(
-			'article' => array(
-				'alias'=>'article',
+			'album_relation' => array(
+				'alias'=>'album_relation',
 				'select'=>'title'
 			),
-			'tag' => array(
-				'alias'=>'tag',
+			'tag_relation' => array(
+				'alias'=>'tag_relation',
 				'select'=>'body'
 			),
 			'creation_relation' => array(
@@ -143,11 +152,11 @@ class ArticleTag extends CActiveRecord
 				'select'=>'displayname'
 			),
 		);
-		$criteria->compare('article.title',strtolower($this->article_search), true);
-		$criteria->compare('tag.body',strtolower($this->tag_search), true);
+		$criteria->compare('album_relation.title',strtolower($this->album_search), true);
+		$criteria->compare('tag_relation.body',strtolower($this->tag_search), true);
 		$criteria->compare('creation_relation.displayname',strtolower($this->creation_search), true);
 
-		if(!isset($_GET['ArticleTag_sort']))
+		if(!isset($_GET['AlbumTag_sort']))
 			$criteria->order = 'id DESC';
 
 		return new CActiveDataProvider($this, array(
@@ -175,9 +184,9 @@ class ArticleTag extends CActiveRecord
 				*/
 				$this->defaultColumns[] = $val;
 			}
-		}else {
+		} else {
 			//$this->defaultColumns[] = 'id';
-			$this->defaultColumns[] = 'article_id';
+			$this->defaultColumns[] = 'album_id';
 			$this->defaultColumns[] = 'tag_id';
 			$this->defaultColumns[] = 'creation_date';
 			$this->defaultColumns[] = 'creation_id';
@@ -195,10 +204,10 @@ class ArticleTag extends CActiveRecord
 				'header' => 'No',
 				'value' => '$this->grid->dataProvider->pagination->currentPage*$this->grid->dataProvider->pagination->pageSize + $row+1'
 			);
-			if(!isset($_GET['article'])) {
+			if(!isset($_GET['album'])) {
 				$this->defaultColumns[] = array(
-					'name' => 'article_search',
-					'value' => '$data->article->title."<br/><span>".Utility::shortText(Utility::hardDecode($data->article->body),150)."</span>"',
+					'name' => 'album_search',
+					'value' => '$data->album_relation->title."<br/><span>".Utility::shortText(Utility::hardDecode($data->album_relation->body),150)."</span>"',
 					'htmlOptions' => array(
 						'class' => 'bold',
 					),
@@ -220,8 +229,8 @@ class ArticleTag extends CActiveRecord
 					'class' => 'center',
 				),
 				'filter' => Yii::app()->controller->widget('zii.widgets.jui.CJuiDatePicker', array(
-					'model'=>$this, 
-					'attribute'=>'creation_date', 
+					'model'=>$this,
+					'attribute'=>'creation_date',
 					'language' => 'ja',
 					'i18nScriptFile' => 'jquery.ui.datepicker-en.js',
 					//'mode'=>'datetime',
@@ -239,17 +248,33 @@ class ArticleTag extends CActiveRecord
 					),
 				), true),
 			);
-
 		}
 		parent::afterConstruct();
 	}
 
 	/**
-	 * get article tag
+	 * User get information
+	 */
+	public static function getInfo($id, $column=null)
+	{
+		if($column != null) {
+			$model = self::model()->findByPk($id,array(
+				'select' => $column
+			));
+			return $model->$column;
+			
+		} else {
+			$model = self::model()->findByPk($id);
+			return $model;			
+		}
+	}
+
+	/**
+	 * get album tag
 	 */
 	public static function getKeyword($keyword, $id) {
 		$model = self::model()->findAll(array(
-			'condition' => 'article_id = :id',
+			'condition' => 'album_id = :id',
 			'params' => array(
 				':id' => $id,
 			),
@@ -260,7 +285,7 @@ class ArticleTag extends CActiveRecord
 		$tag = '';
 		if($model != null) {
 			foreach($model as $val) {
-				$tag .= ','.$val->tag->body;
+				$tag .= ','.$val->tag_relation->body;
 			}
 		}
 		
