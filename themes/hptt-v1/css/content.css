@@ -1,0 +1,9 @@
+/* =Main
+-------------------------------------------------------------*/
+#main,
+#main .content {
+	height: 100%;
+}
+#main .content:nth-child(2n) {
+	background: #f0f0f0;
+}

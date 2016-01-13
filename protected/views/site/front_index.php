@@ -10,3 +10,31 @@
  *
  */
 ?>
+
+<div class="content">
+	<div class="container">1</div>
+</div>
+
+<div class="content">
+	<div class="container">2</div>
+</div>
+
+<div class="content">
+	<div class="container">3</div>
+</div>
+
+<div class="content">
+	<div class="container">4</div>
+</div>
+
+<div class="content">
+	<div class="container">5</div>
+</div>
+
+<div class="content">
+	<div class="container">6</div>
+</div>
+
+<div class="content">
+	<div class="container">7</div>
+</div>

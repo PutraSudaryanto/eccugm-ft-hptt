@@ -120,6 +120,10 @@ if(isset($_GET['protocol']) && $_GET['protocol'] == 'script') {
  </head>
  <body <?php echo $this->dialogDetail == true ? 'style="overflow-y: hidden;"' : '';?>>
  
+<?php if($module == null && $currentAction == 'site/index') {
+	echo $this->dialogDetail == false ? $content : '';
+
+	} else {?>
 	<?php //begin.BodyContent ?>
 	<div class="body">		
 		<div class="container">
@@ -127,6 +131,7 @@ if(isset($_GET['protocol']) && $_GET['protocol'] == 'script') {
 		</div>
 	</div>
 	<?php //end.BodyContent ?>
+<?php }?>
 	
 	<?php $this->widget('FrontGoogleAnalytics'); ?>
  </body>
