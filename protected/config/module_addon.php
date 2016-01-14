@@ -6,6 +6,7 @@ return array(
 		'banner',
 		'report',
 		'support',
-		'users'
+		'users',
+		'video'
 	),
 );

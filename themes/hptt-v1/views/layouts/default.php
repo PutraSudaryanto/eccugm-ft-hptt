@@ -43,6 +43,10 @@ if(isset($_GET['protocol']) && $_GET['protocol'] == 'script') {
 	$keywords = $this->pageMeta;
 	$urlAddress = Utility::getProtocol().'://'.Yii::app()->request->serverName.Yii::app()->request->requestUri;
 	$apps = $this->dialogDetail == true ? ($this->dialogFixed == false ? 'apps' : 'module') : '';
+	
+	$main = false;
+	if($module == null && $currentAction == 'site/index')
+		$main = true;
 
 	if(Yii::app()->request->isAjaxRequest && !isset($_GET['ajax'])) {
 		if(Yii::app()->session['theme_active'] != Yii::app()->theme->name) {
@@ -119,8 +123,25 @@ if(isset($_GET['protocol']) && $_GET['protocol'] == 'script') {
   <style type="text/css"></style>
  </head>
  <body <?php echo $this->dialogDetail == true ? 'style="overflow-y: hidden;"' : '';?>>
+	
+	<?php //begin.Header ?>
+	<header>
+		<div class="container">
+			<div class="mainmenu">
+				<ul class="clearfix">
+					<li class="home"><a href="<?php echo $main == true ? '#home' : Yii::app()->createUrl('site/index');?>" title="<?php echo $setting->site_title;?>"><img src="<?php echo Yii::app()->request->baseUrl?>/public/main/logo_hptt_h.png" alt="<?php echo $setting->site_title;?>" /></a></li>
+					<li><a href="<?php echo $main == true ? '#intro' : Yii::app()->createUrl('page/view', array('id'=>6,'t'=>Utility::getUrlTitle(Phrase::trans(1533, 2))));?>" title="Sambutan">Sambutan</a></li>
+					<li><a href="<?php echo $main == true ? '#event' : Yii::app()->createUrl('page/view', array('id'=>7,'t'=>Utility::getUrlTitle(Phrase::trans(1537, 2))));?>" title="Agenda">Agenda</a></li>
+					<li><a href="<?php echo $main == true ? '#news' : Yii::app()->createUrl('article/site/index', array('category'=>1,'t'=>Utility::getUrlTitle(Phrase::trans(1531, 2))));?>" title="Berita">Berita</a></li>
+					<li><a href="<?php echo $main == true ? '#gallery' : Yii::app()->createUrl('album/site/index');?>" title="Galeri">Galeri</a></li>
+					<li><a href="<?php echo $main == true ? '#contact' : Yii::app()->createUrl('support/contact/feedback');?>" title="Kontak">Kontak</a></li>
+				</ul>
+			</div>
+		</div>
+	</header>
+	<?php //end.Header ?>
  
-<?php if($module == null && $currentAction == 'site/index') {
+<?php if($main == true) {
 	echo $this->dialogDetail == false ? $content : '';
 
 	} else {?>

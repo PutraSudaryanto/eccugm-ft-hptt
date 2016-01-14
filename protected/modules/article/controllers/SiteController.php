@@ -146,8 +146,8 @@ class SiteController extends Controller
 			':publish'=>1,
 			':id'=>$id,
 		);
+		$criteria->compare('cat_id',$model->cat_id);
 		$criteria->order = 'RAND()';
-		$criteria->addInCondition('cat_id',$model->cat_id);
 		$criteria->limit = 4;		
 		$random = Articles::model()->findAll($criteria);		
 

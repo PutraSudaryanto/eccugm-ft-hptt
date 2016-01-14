@@ -74,8 +74,6 @@ class OmmuPages extends CActiveRecord
 			array('user_id,
 				title, description', 'required'),
 			array('publish, media_show, media_type', 'numerical', 'integerOnly'=>true),
-			array('media,
-				old_media', 'length', 'max'=>64),
 			array('
 				title', 'length', 'max'=>256),
 			//array('media', 'file', 'types' => 'jpg, jpeg, png, gif', 'allowEmpty' => true),
@@ -321,7 +319,7 @@ class OmmuPages extends CActiveRecord
 			$media = CUploadedFile::getInstance($this, 'media');		
 			if($media->name != '') {
 				$extension = pathinfo($media->name, PATHINFO_EXTENSION);
-				if(!in_array($extension, array('bmp','gif','jpg','png')))
+				if(!in_array(strtolower($extension), array('bmp','gif','jpg','png')))
 					$this->addError('media', 'The file "'.$media->name.'" cannot be uploaded. Only files with these extensions are allowed: bmp, gif, jpg, png.');
 			}
 		}
@@ -359,60 +357,34 @@ class OmmuPages extends CActiveRecord
 					$desc->en = $this->description;
 					$desc->save();
 				}
-				
-				//upload new photo
-				$page_path = "public/page";
-				$this->media = CUploadedFile::getInstance($this, 'media');
-				if($this->media instanceOf CUploadedFile) {
-					$fileName = $this->page_id.'_'.time().'.'.$this->media->extensionName;
-					if($this->media->saveAs($page_path.'/'.$fileName)) {
-						//create thumb image
-						Yii::import('ext.phpthumb.PhpThumbFactory');
-						$pageImg = PhpThumbFactory::create($page_path.'/'.$fileName, array('jpegQuality' => 90, 'correctPermissions' => true));
-						$pageImg->resize(1280);
-						$pageImg->save($page_path.'/'.$fileName);
-						
-						if(!$this->isNewRecord && $this->old_media != '')
-							rename($page_path.'/'.$this->old_media, 'public/page/verwijderen/'.$this->old_media);
-						$this->media = $fileName;
-					}
-				}
-				
-				if($this->media == '') {
-					$this->media = $this->old_media;
-				}
 			}
-		}
-		return true;
-	}	
-	
-	/**
-	 * After save attributes
-	 */
-	protected function afterSave() {
-		parent::afterSave();
-		if($this->isNewRecord) {
+				
+			//upload new photo
 			$page_path = "public/page";
 			$this->media = CUploadedFile::getInstance($this, 'media');
 			if($this->media instanceOf CUploadedFile) {
-				$fileName = $this->page_id.'_'.time().'.'.$this->media->extensionName;
+				$fileName = time().'_'.Utility::getUrlTitle(Phrase::trans($this->name, 2)).'.'.strtolower($this->media->extensionName);
 				if($this->media->saveAs($page_path.'/'.$fileName)) {
 					//create thumb image
 					Yii::import('ext.phpthumb.PhpThumbFactory');
 					$pageImg = PhpThumbFactory::create($page_path.'/'.$fileName, array('jpegQuality' => 90, 'correctPermissions' => true));
 					$pageImg->resize(700);
-					$pageImg->save($page_path.'/'.$fileName);
-
-					/* Update cover */
-					$media = self::model()->findByPk($this->page_id);
-					$media->media = $fileName;
-					$media->media_show = 1;
-					$media->media_type = 1;
-					$media->update();
-
+					if($pageImg->save($page_path.'/'.$fileName)) {
+						$this->media_show = 1;
+						$this->media_type = 1;
+					}
+					
+					if(!$this->isNewRecord && $this->old_media != '')
+						rename($page_path.'/'.$this->old_media, 'public/page/verwijderen/'.$this->page_id.'_'.$this->old_media);
+					$this->media = $fileName;
 				}
-			}			
+			}
+			
+			if(!$this->isNewRecord && $this->media == '') {
+				$this->media = $this->old_media;
+			}
 		}
+		return true;
 	}
 
 	/**
@@ -423,7 +395,7 @@ class OmmuPages extends CActiveRecord
 		//delete page image
 		$page_path = "public/page";
 		if($this->media != '') {
-			rename($page_path.'/'.$this->media, 'public/page/verwijderen/'.$this->media);
+			rename($page_path.'/'.$this->media, 'public/page/verwijderen/'.$this->page_id.'_'.$this->media);
 		}
 	}
 

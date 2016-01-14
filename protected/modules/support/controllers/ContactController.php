@@ -125,29 +125,40 @@ class ContactController extends Controller
 			$model->attributes=$_POST['SupportMails'];
 			$model->scenario = 'contactus';
 			
-			if($model->save()) {
-				if($model->user_id != 0)
-					$url = Yii::app()->controller->createUrl('feedback', array('email'=>$model->email, 'name'=>$model->displayname));
-				else
-					$url = Yii::app()->controller->createUrl('feedback', array('email'=>$model->email, 'name'=>$model->displayname));
-				$this->redirect($url);
-				/*
-				echo CJSON::encode(array(
-					'type' => 5,
-					'get' => $url,
-				));
-				*/
+			$jsonError = CActiveForm::validate($model);
+			if(strlen($jsonError) > 2) {
+				echo $jsonError;
+			} else {
+				if(isset($_GET['enablesave']) && $_GET['enablesave'] == 1) {
+					if($model->save()) {
+						if($model->user_id != 0)
+							$url = Yii::app()->controller->createUrl('feedback', array('email'=>$model->email, 'name'=>$model->displayname));
+						else
+							$url = Yii::app()->controller->createUrl('feedback', array('email'=>$model->email, 'name'=>$model->displayname));
+						$this->redirect($url);
+						/*
+						echo CJSON::encode(array(
+							'type' => 5,
+							'get' => $url,
+						));
+						*/						
+					} else {
+						print_r($model->getErrors());
+					}
+				}
 			}
+			Yii::app()->end();
+			
+		} else {		
+			$this->pageTitleShow = true;		
+			$this->pageTitle = isset($_GET['email']) ? 'Kontak Kami Berhasil Dikirim' : 'Kontak Kami';
+			$this->pageDescription = isset($_GET['email']) ? (isset($_GET['name']) ? Phrase::trans(23123,1, array($_GET['name'], $_GET['email'])) : Phrase::trans(23122,1, array($_GET['email']))) : '';
+			$this->pageMeta = '';
+			$this->render('front_feedback',array(
+				'model'=>$model,
+				'user'=>$user,
+			));			
 		}
-		
-		$this->pageTitleShow = true;		
-		$this->pageTitle = isset($_GET['email']) ? 'Kontak Kami Berhasil Dikirim' : 'Kontak Kami';
-		$this->pageDescription = isset($_GET['email']) ? (isset($_GET['name']) ? Phrase::trans(23123,1, array($_GET['name'], $_GET['email'])) : Phrase::trans(23122,1, array($_GET['email']))) : '';
-		$this->pageMeta = '';
-		$this->render('front_feedback',array(
-			'model'=>$model,
-			'user'=>$user,
-		));
 	}
 	
 	/**
