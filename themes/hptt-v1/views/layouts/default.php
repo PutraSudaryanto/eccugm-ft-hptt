@@ -125,12 +125,16 @@ if(isset($_GET['protocol']) && $_GET['protocol'] == 'script') {
  <body <?php echo $this->dialogDetail == true ? 'style="overflow-y: hidden;"' : '';?>>
 	
 	<?php //begin.Header ?>
-	<header>
+	<header <?php echo $main == true ? 'class="main"' : '';?>>
 		<div class="container">
 			<div class="mainmenu">
 				<ul class="clearfix">
 					<li class="home"><a href="<?php echo $main == true ? '#home' : Yii::app()->createUrl('site/index');?>" title="<?php echo $setting->site_title;?>"><img src="<?php echo Yii::app()->request->baseUrl?>/public/main/logo_hptt_h.png" alt="<?php echo $setting->site_title;?>" /></a></li>
-					<li><a href="<?php echo $main == true ? '#intro' : Yii::app()->createUrl('page/view', array('id'=>6,'t'=>Utility::getUrlTitle(Phrase::trans(1533, 2))));?>" title="Sambutan">Sambutan</a></li>
+					<?php if($main == true) {?>
+						<li><a href="#intro" title="Sambutan">Sambutan</a></li>
+					<?php } else {?>
+						<li><a href="<?php echo Yii::app()->createUrl('page/view', array('id'=>6,'t'=>Utility::getUrlTitle(Phrase::trans(1533, 2))));?>" title="Sambutan">Sambutan</a></li>
+					<?php }?>
 					<li><a href="<?php echo $main == true ? '#event' : Yii::app()->createUrl('page/view', array('id'=>7,'t'=>Utility::getUrlTitle(Phrase::trans(1537, 2))));?>" title="Agenda">Agenda</a></li>
 					<li><a href="<?php echo $main == true ? '#news' : Yii::app()->createUrl('article/site/index', array('category'=>1,'t'=>Utility::getUrlTitle(Phrase::trans(1531, 2))));?>" title="Berita">Berita</a></li>
 					<li><a href="<?php echo $main == true ? '#gallery' : Yii::app()->createUrl('album/site/index');?>" title="Galeri">Galeri</a></li>
@@ -152,6 +156,19 @@ if(isset($_GET['protocol']) && $_GET['protocol'] == 'script') {
 		</div>
 	</div>
 	<?php //end.BodyContent ?>
+	
+	<?php //begin.Footer?>
+	<footer>
+		<div class="container">
+		</div>
+		<?php //begin.Copyright ?>
+		<div class="copyright">
+			<div class="container">
+				<?php $this->widget('FooterCopyright'); ?>
+			</div>
+		</div>
+	<footer>
+	<?php //end.Footer?>
 <?php }?>
 	
 	<?php $this->widget('FrontGoogleAnalytics'); ?>

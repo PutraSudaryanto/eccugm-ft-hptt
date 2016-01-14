@@ -17,13 +17,15 @@
 	);
 ?>
 
-<?php $this->widget('application.components.system.FListView', array(
-	'dataProvider'=>$dataProvider,
-	'itemView'=>'_view',
-	'pager' => array(
-		'header' => '',
-	), 
-	'summaryText' => '',
-	'itemsCssClass' => 'items clearfix',
-	'pagerCssClass'=>'pager clearfix',
-)); ?>
+<div class="box list">
+	<?php $this->widget('application.components.system.FListView', array(
+		'dataProvider'=>$dataProvider,
+		'itemView'=>'_view',
+		'pager' => array(
+			'header' => '',
+		), 
+		'summaryText' => '',
+		'itemsCssClass' => 'items clearfix',
+		'pagerCssClass'=>'pager clearfix',
+	)); ?>
+</div>

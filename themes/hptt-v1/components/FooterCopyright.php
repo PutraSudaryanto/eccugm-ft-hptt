@@ -1,6 +1,6 @@
 <?php
 
-class FrontFooterCopyright extends CWidget
+class FooterCopyright extends CWidget
 {
 
 	public function init() {
@@ -16,7 +16,7 @@ class FrontFooterCopyright extends CWidget
 			'select' => 'site_title, site_description',
 		));
 
-		$this->render('front_footer_copyright',array(
+		$this->render('footer_copyright',array(
 			'model' => $model,
 		));	
 	}

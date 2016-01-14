@@ -63,15 +63,12 @@
 							'options'=>array(
 								//'lang'=>'fi',
 								'buttons'=>array(
-									'html', 'formatting', '|', 
+									'html', '|', 
 									'bold', 'italic', 'deleted', '|',
-									'unorderedlist', 'orderedlist', 'outdent', 'indent', '|',
-									'link', '|',
 								),
 							),
 							'plugins' => array(
 								'fontcolor' => array('js' => array('fontcolor.js')),
-								'table' => array('js' => array('table.js')),
 								'fullscreen' => array('js' => array('fullscreen.js')),
 							),
 						)); ?>

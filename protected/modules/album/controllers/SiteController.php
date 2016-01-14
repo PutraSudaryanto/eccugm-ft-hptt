@@ -108,7 +108,7 @@ class SiteController extends Controller
 		$dataProvider = new CActiveDataProvider('Albums', array(
 			'criteria'=>$criteria,
 			'pagination'=>array(
-				'pageSize'=>10,
+				'pageSize'=>9,
 			),
 		));
 
@@ -141,13 +141,29 @@ class SiteController extends Controller
 			'order' => 'media_id DESC',
 		));
 
-		$this->pageTitleShow = true;
+		//Random Article
+		$criteria=new CDbCriteria;
+		$criteria->condition = 'publish = :publish AND album_id <> :id';
+		$criteria->params = array(
+			':publish'=>1,
+			':id'=>$id,
+		);
+		$criteria->order = 'RAND()';
+		$criteria->limit = 4;		
+		$random = Albums::model()->findAll($criteria);
+		
+		$this->pageTitleShow = true;		
 		$this->pageTitle = $model->title;
 		$this->pageDescription = Utility::shortText(Utility::hardDecode($model->body),300);
 		$this->pageMeta = $setting->meta_keyword;
+		if($model->media_id != 0 && $model->cover->media != '') {
+			$media = Yii::app()->request->baseUrl.'/public/album/'.$id.'/'.$model->cover->media;
+			$this->pageImage = $media;
+		}
 		$this->render('front_view',array(
 			'model'=>$model,
 			'photo'=>$photo,
+			'random'=>$random,
 		));
 	}
 

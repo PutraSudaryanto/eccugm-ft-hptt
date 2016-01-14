@@ -25,6 +25,7 @@
  * @property string $user_id
  * @property string $name
  * @property string $desc
+ * @property string $quote
  * @property string $media
  * @property integer $media_show
  * @property integer $media_type
@@ -38,6 +39,7 @@ class OmmuPages extends CActiveRecord
 	public $defaultColumns = array();
 	public $title;
 	public $description;
+	public $quotes;
 	public $old_media;
 	
 	// Variable Search
@@ -78,11 +80,11 @@ class OmmuPages extends CActiveRecord
 				title', 'length', 'max'=>256),
 			//array('media', 'file', 'types' => 'jpg, jpeg, png, gif', 'allowEmpty' => true),
 			array('media, creation_date, modified_date, 
-				old_media', 'safe'),
+				quotes, old_media', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('page_id, publish, user_id, name, desc, media, media_show, media_type, creation_date, creation_id, modified_date, modified_id,
-				title, description, user_search, creation_search, modified_search', 'safe', 'on'=>'search'),
+			array('page_id, publish, user_id, name, desc, quote, media, media_show, media_type, creation_date, creation_id, modified_date, modified_id,
+				title, description, quotes, user_search, creation_search, modified_search', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -112,15 +114,17 @@ class OmmuPages extends CActiveRecord
 			'user_id' => Phrase::trans(191,0),
 			'name' => Phrase::trans(189,0),
 			'desc' => Phrase::trans(190,0),
-			'title' => Phrase::trans(189,0),
+			'quote' => 'Quote',
 			'media' => Phrase::trans(341,0),
 			'media_show' => Phrase::trans(342,0),
 			'media_type' => Phrase::trans(343,0),
-			'description' => Phrase::trans(190,0),
 			'creation_date' => Phrase::trans(365,0),
 			'creation_id' => 'Creation',
 			'modified_date' => Phrase::trans(446,0),
 			'modified_id' => 'Modified',
+			'title' => Phrase::trans(189,0),
+			'description' => Phrase::trans(190,0),
+			'quotes' => 'Quotes',
 			'user_search' => Phrase::trans(191,0),
 			'creation_search' => 'Creation',
 			'modified_search' => 'Modified',
@@ -152,6 +156,7 @@ class OmmuPages extends CActiveRecord
 		$criteria->compare('t.user_id',$this->user_id);
 		$criteria->compare('t.name',$this->name);
 		$criteria->compare('t.desc',$this->desc);
+		$criteria->compare('t.quote',$this->quote);
 		$criteria->compare('t.media',strtolower($this->media),true);
 		$criteria->compare('t.media_show',$this->media_show);
 		$criteria->compare('t.media_type',$this->media_type);
@@ -221,6 +226,7 @@ class OmmuPages extends CActiveRecord
 			$this->defaultColumns[] = 'user_id';
 			$this->defaultColumns[] = 'name';
 			$this->defaultColumns[] = 'desc';
+			$this->defaultColumns[] = 'quote';
 			$this->defaultColumns[] = 'media';
 			$this->defaultColumns[] = 'media_show';
 			$this->defaultColumns[] = 'media_type';
@@ -347,6 +353,13 @@ class OmmuPages extends CActiveRecord
 				if($desc->save()) {
 					$this->desc = $desc->phrase_id;
 				}
+
+				$quote=new OmmuSystemPhrase;
+				$quote->location = $currentAction;
+				$quote->en = $this->quotes;
+				if($quote->save()) {
+					$this->quote = $quote->phrase_id;
+				}
 			} else {
 				if($action == 'edit') {
 					$title = OmmuSystemPhrase::model()->findByPk($this->name);
@@ -356,6 +369,19 @@ class OmmuPages extends CActiveRecord
 					$desc = OmmuSystemPhrase::model()->findByPk($this->desc);
 					$desc->en = $this->description;
 					$desc->save();
+					
+					if($this->quote != 0) {
+						$quote = OmmuSystemPhrase::model()->findByPk($this->quote);
+						$quote->en = $this->quotes;
+						$quote->save();						
+					} else {
+						$quote=new OmmuSystemPhrase;
+						$quote->location = $currentAction;
+						$quote->en = $this->quotes;
+						if($quote->save()) {
+							$this->quote = $quote->phrase_id;
+						}						
+					}
 				}
 			}
 				

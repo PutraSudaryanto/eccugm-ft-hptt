@@ -18,6 +18,10 @@
 	} else {
 		if($controller == 'site')
 			$class = $module;
+			if(in_array($currentModule, array('album/search','article/search')))
+				$class = 'search';
+			else if(in_array($module, array('album','article')))
+				$class = 'module';
 		else
 			$class = $module.'-'.$controller;
 	}
@@ -36,7 +40,14 @@
 		</div>
 		<div class="sidebar">
 			<div class="boxed clearfix">
-			
+				<?php 
+				if($module != 'article')
+					$this->widget('ArticleRecent');
+				if(($module == null && $controller != 'page') || ($module != null))
+					$this->widget('ArticlePopular');
+				if($module != 'album')
+					$this->widget('AlbumRecents');
+				?>
 			</div>
 		</div>
 	<?php } else {

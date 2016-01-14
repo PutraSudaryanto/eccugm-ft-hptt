@@ -107,20 +107,20 @@ class SiteController extends Controller
 		$criteria->params = array(
 			':publish'=>1,
 		);
-		$criteria->order = 'published_date DESC';
+		$criteria->order = 'published_date DESC, creation_date DESC';
 		if(isset($_GET['category']) && $_GET['category'] != '')
 			$criteria->compare('cat_id',$_GET['category']);
 
 		$dataProvider = new CActiveDataProvider('Articles', array(
 			'criteria'=>$criteria,
 			'pagination'=>array(
-				'pageSize'=>10,
+				'pageSize'=>9,
 			),
 		));
 
-		$this->pageTitle = 'Articles';
-		$this->pageDescription = (isset($_GET['category']) && $_GET['category'] != '') ? Phrase::trans($title->name, 2) : $setting->meta_description;
-		$this->pageMeta = (isset($_GET['category']) && $_GET['category'] != '') ? Phrase::trans($title->desc, 2) : $setting->meta_keyword;
+		$this->pageTitle = (isset($_GET['category']) && $_GET['category'] != '') ? Phrase::trans($title->name, 2) : 'Articles';
+		$this->pageDescription = $setting->meta_description;
+		$this->pageMeta = $setting->meta_keyword;
 		$this->render('front_index',array(
 			'dataProvider'=>$dataProvider,
 		));
@@ -138,6 +138,14 @@ class SiteController extends Controller
 
 		$model=$this->loadModel($id);
 		Articles::model()->updateByPk($id, array('view'=>$model->view + 1));
+
+		$photo = ArticleMedia::model()->findAll(array(
+			'condition' => 'article_id = :id',
+			'params' => array(
+				':id' => $model->article_id,
+			),
+			'order' => 'media_id DESC',
+		));
 		
 		//Random Article
 		$criteria=new CDbCriteria;
@@ -149,8 +157,9 @@ class SiteController extends Controller
 		$criteria->compare('cat_id',$model->cat_id);
 		$criteria->order = 'RAND()';
 		$criteria->limit = 4;		
-		$random = Articles::model()->findAll($criteria);		
-
+		$random = Articles::model()->findAll($criteria);
+		
+		$this->pageTitleShow = true;
 		$this->pageTitle = $model->title;
 		$this->pageDescription = Utility::shortText(Utility::hardDecode($model->body),300);
 		$this->pageMeta = ArticleTag::getKeyword($setting->meta_keyword, $id);
@@ -164,6 +173,7 @@ class SiteController extends Controller
 		}
 		$this->render('front_view',array(
 			'model'=>$model,
+			'photo'=>$photo,
 			'random'=>$random,
 		));
 	}

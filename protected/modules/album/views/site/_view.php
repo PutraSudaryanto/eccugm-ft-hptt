@@ -8,79 +8,40 @@
  * @contect (+62)856-299-4114
  *
  */
+
+	if($data->media_id != 0)
+		$images = Yii::app()->request->baseUrl.'/public/album/'.$data->album_id.'/'.$data->cover->media;
+	else
+		$images = Yii::app()->request->baseUrl.'/public/album/album_default.png';
 ?>
 
-<div class="view">
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('album_id')); ?>:</b>
-	<?php echo CHtml::link(CHtml::encode($data->album_id), array('view', 'id'=>$data->album_id)); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('publish')); ?>:</b>
-	<?php echo CHtml::encode($data->publish); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('user_id')); ?>:</b>
-	<?php echo CHtml::encode($data->user_id); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('media_id')); ?>:</b>
-	<?php echo CHtml::encode($data->media_id); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('headline')); ?>:</b>
-	<?php echo CHtml::encode($data->headline); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('comment_code')); ?>:</b>
-	<?php echo CHtml::encode($data->comment_code); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('title')); ?>:</b>
-	<?php echo CHtml::encode($data->title); ?>
-	<br />
-
-	<?php /*
-	<b><?php echo CHtml::encode($data->getAttributeLabel('body')); ?>:</b>
-	<?php echo CHtml::encode($data->body); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('quote')); ?>:</b>
-	<?php echo CHtml::encode($data->quote); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('photos')); ?>:</b>
-	<?php echo CHtml::encode($data->photos); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('comment')); ?>:</b>
-	<?php echo CHtml::encode($data->comment); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('view')); ?>:</b>
-	<?php echo CHtml::encode($data->view); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('likes')); ?>:</b>
-	<?php echo CHtml::encode($data->likes); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('creation_date')); ?>:</b>
-	<?php echo CHtml::encode($data->creation_date); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('creation_id')); ?>:</b>
-	<?php echo CHtml::encode($data->creation_id); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('modified_date')); ?>:</b>
-	<?php echo CHtml::encode($data->modified_date); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('modified_id')); ?>:</b>
-	<?php echo CHtml::encode($data->modified_id); ?>
-	<br />
-
-	*/ ?>
-
-</div>
+<?php if($index == 0) {?>
+	<div class="sep full">
+		<a class="images" href="<?php echo Yii::app()->controller->createUrl('view', array('id'=>$data->album_id,'t'=>Utility::getUrlTitle($data->title)));?>" title="<?php echo $data->title;?>">
+			<img src="<?php echo Utility::getTimThumb($images, 600, 250, 1);?>" alt="<?php echo $data->title;?>" />
+		</a>
+		<a class="title" href="<?php echo Yii::app()->controller->createUrl('view', array('id'=>$data->album_id,'t'=>Utility::getUrlTitle($data->title)));?>" title="<?php echo $data->title;?>"><?php echo Utility::hardDecode($data->title);?></a>
+		<div class="meta">
+			<i class="fa fa-calendar-check-o"></i><?php echo Utility::dateFormat($data->creation_date);?>
+			<i class="fa fa-bookmark-o"></i><?php echo $data->user->displayname;?>
+			<i class="fa fa-picture-o"></i><?php echo $data->photos?>
+			<i class="fa fa-eye"></i><?php echo $data->view?>
+		</div>
+		<p><?php echo Utility::shortText(Utility::hardDecode($data->body),250);?></p>
+	</div>
+	<div class="clear"></div>
+	
+<?php } else {?>
+	<div class="sep">
+		<a class="images" href="<?php echo Yii::app()->controller->createUrl('view', array('id'=>$data->album_id,'t'=>Utility::getUrlTitle($data->title)));?>" title="<?php echo $data->title;?>">
+			<img src="<?php echo Utility::getTimThumb($images, 300, 150, 1);?>" alt="<?php echo $data->title;?>" />
+		</a>
+		<a class="title" href="<?php echo Yii::app()->controller->createUrl('view', array('id'=>$data->album_id,'t'=>Utility::getUrlTitle($data->title)));?>" title="<?php echo $data->title;?>"><?php echo Utility::hardDecode($data->title);?></a>
+		<div class="meta">
+			<i class="fa fa-calendar-check-o"></i><?php echo Utility::dateFormat($data->creation_date);?>
+			<i class="fa fa-picture-o"></i><?php echo $data->photos?>
+			<i class="fa fa-eye"></i><?php echo $data->view?>
+		</div>
+		<p><?php echo Utility::shortText(Utility::hardDecode($data->body),100);?></p>
+	</div>
+<?php }?>
