@@ -386,28 +386,30 @@ class OmmuPages extends CActiveRecord
 			}
 				
 			//upload new photo
-			$page_path = "public/page";
-			$this->media = CUploadedFile::getInstance($this, 'media');
-			if($this->media instanceOf CUploadedFile) {
-				$fileName = time().'_'.Utility::getUrlTitle(Phrase::trans($this->name, 2)).'.'.strtolower($this->media->extensionName);
-				if($this->media->saveAs($page_path.'/'.$fileName)) {
-					//create thumb image
-					Yii::import('ext.phpthumb.PhpThumbFactory');
-					$pageImg = PhpThumbFactory::create($page_path.'/'.$fileName, array('jpegQuality' => 90, 'correctPermissions' => true));
-					$pageImg->resize(700);
-					if($pageImg->save($page_path.'/'.$fileName)) {
-						$this->media_show = 1;
-						$this->media_type = 1;
+			if($action != 'publish') {
+				$page_path = "public/page";
+				$this->media = CUploadedFile::getInstance($this, 'media');
+				if($this->media instanceOf CUploadedFile) {
+					$fileName = time().'_'.Utility::getUrlTitle(Phrase::trans($this->name, 2)).'.'.strtolower($this->media->extensionName);
+					if($this->media->saveAs($page_path.'/'.$fileName)) {
+						//create thumb image
+						Yii::import('ext.phpthumb.PhpThumbFactory');
+						$pageImg = PhpThumbFactory::create($page_path.'/'.$fileName, array('jpegQuality' => 90, 'correctPermissions' => true));
+						$pageImg->resize(700);
+						if($pageImg->save($page_path.'/'.$fileName)) {
+							$this->media_show = 1;
+							$this->media_type = 1;
+						}
+						
+						if(!$this->isNewRecord && $this->old_media != '')
+							rename($page_path.'/'.$this->old_media, 'public/page/verwijderen/'.$this->page_id.'_'.$this->old_media);
+						$this->media = $fileName;
 					}
-					
-					if(!$this->isNewRecord && $this->old_media != '')
-						rename($page_path.'/'.$this->old_media, 'public/page/verwijderen/'.$this->page_id.'_'.$this->old_media);
-					$this->media = $fileName;
 				}
-			}
-			
-			if(!$this->isNewRecord && $this->media == '') {
-				$this->media = $this->old_media;
+				
+				if(!$this->isNewRecord && $this->media == '') {
+					$this->media = $this->old_media;
+				}
 			}
 		}
 		return true;

@@ -472,8 +472,7 @@ class Banners extends CActiveRecord
 				$this->permanent == 1;
 			
 			if($this->permanent == 1)
-				$this->expired_date = '00-00-0000';
-				
+				$this->expired_date = '00-00-0000';				
 			
 			if($this->permanent != 1 && ($this->published_date != '' && $this->expired_date != '') && ($this->published_date >= $this->expired_date))
 				$this->addError('expired_date', Phrase::trans(28034,1));
@@ -486,7 +485,8 @@ class Banners extends CActiveRecord
 	 */
 	protected function beforeSave() {
 		if(parent::beforeSave()) {			
-			if(!$this->isNewRecord) {
+			$action = strtolower(Yii::app()->controller->action->id);
+			if(!$this->isNewRecord && $action == 'edit') {
 				//Update banner photo
 				$banner_path = "public/banner/";
 				
