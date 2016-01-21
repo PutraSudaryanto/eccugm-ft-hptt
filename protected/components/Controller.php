@@ -214,7 +214,7 @@ class Controller extends CController
 				Yii::app()->meta->googlePlusTags['name'] = 
 				Yii::app()->meta->facebookTags['og:title'] = 
 				Yii::app()->meta->twitterTags['twitter:title'] = 
-				CHtml::encode(ucwords(strtolower($this->pageTitle))).' | '.$model->site_title; 
+				CHtml::encode($this->pageTitle).' | '.$model->site_title; 
 				// description
 				Yii::app()->meta->googlePlusTags['description'] = 
 				Yii::app()->meta->facebookTags['og:description'] = 
@@ -233,7 +233,7 @@ class Controller extends CController
 			$this->pageDescription = $this->pageDescription != '' ? ucfirst(strtolower($this->pageDescription)) : $model->site_description;
 			$this->pageMeta = $this->pageMeta != '' ? $model->site_keywords.', '.$this->pageMeta : $model->site_keywords;
 		}
-		$this->pageTitle = $this->pageTitle != '' ? ucwords(strtolower($this->pageTitle)) : 'Titlenya Lupa..';
+		$this->pageTitle = $this->pageTitle != '' ? $this->pageTitle : 'Titlenya Lupa..';
 		return true;
 	}
 	
