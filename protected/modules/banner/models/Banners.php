@@ -203,7 +203,7 @@ class Banners extends CActiveRecord
 		$criteria->compare('modified_relation.displayname',strtolower($this->modified_search), true);
 
 		if(!isset($_GET['Banners_sort']))
-			$criteria->order = 'banner_id DESC';
+			$criteria->order = 't.banner_id DESC';
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -469,7 +469,7 @@ class Banners extends CActiveRecord
 			}
 			
 			if(in_array(date('Y-m-d', strtotime($this->expired_date)), array('0000-00-00','1970-01-01')))
-				$this->permanent == 1;
+				$this->permanent = 1;
 			
 			if($this->permanent == 1)
 				$this->expired_date = '00-00-0000';				
