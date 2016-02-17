@@ -1,9 +1,10 @@
 <?php
 /**
- * OmmuAuthors
+ * SupportWidget
  * @author Putra Sudaryanto <putra.sudaryanto@gmail.com>
- * @copyright Copyright (c) 2015 Ommu Platform (ommu.co)
- * @link https://github.com/oMMu/Ommu-Core
+ * @copyright Copyright (c) 2016 Ommu Platform (ommu.co)
+ * @created date 3 February 2016, 12:24 WIB
+ * @link http://company.ommu.co
  * @contact (+62)856-299-4114
  *
  * This is the template for generating the model class of a specified table.
@@ -17,31 +18,34 @@
  *
  * --------------------------------------------------------------------------------------
  *
- * This is the model class for table "ommu_core_authors".
+ * This is the model class for table "ommu_support_widget".
  *
- * The followings are the available columns in table 'ommu_core_authors':
- * @property string $author_id
+ * The followings are the available columns in table 'ommu_support_widget':
+ * @property string $widget_id
  * @property integer $publish
- * @property string $name
- * @property string $email
- * @property string $password
+ * @property integer $cat_id
+ * @property string $widget_source
  * @property string $creation_date
+ * @property string $creation_id
  * @property string $modified_date
  * @property string $modified_id
+ *
+ * The followings are the available model relations:
+ * @property OmmuSupportContactCategory $cat
  */
-class OmmuAuthors extends CActiveRecord
+class SupportWidget extends CActiveRecord
 {
 	public $defaultColumns = array();
-	public $author_phone;
 	
 	// Variable Search
+	public $creation_search;
 	public $modified_search;
 
 	/**
 	 * Returns the static model of the specified AR class.
 	 * Please note that you should have this exact method in all your CActiveRecord descendants!
 	 * @param string $className active record class name.
-	 * @return OmmuAuthors the static model class
+	 * @return SupportWidget the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
@@ -53,7 +57,7 @@ class OmmuAuthors extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'ommu_core_authors';
+		return 'ommu_support_widget';
 	}
 
 	/**
@@ -64,16 +68,14 @@ class OmmuAuthors extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('name, email', 'required'),
-			array('author_phone', 'required', 'on'=>'phone'),
-			array('publish', 'numerical', 'integerOnly'=>true),
-			array('name, email, password', 'length', 'max'=>32),
-			array('password, creation_date, modified_date,
-				author_phone', 'safe'),
+			array('cat_id, widget_source', 'required'),
+			array('publish, cat_id', 'numerical', 'integerOnly'=>true),
+			array('creation_id, modified_id', 'length', 'max'=>11),
+			array('modified_date', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('author_id, publish, name, email, password, creation_date, modified_date, modified_id,
-				modified_search', 'safe', 'on'=>'search'),
+			array('widget_id, publish, cat_id, widget_source, creation_date, creation_id, modified_date, modified_id,
+				creation_search, modified_search', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -85,8 +87,9 @@ class OmmuAuthors extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
+			'cat_TO' => array(self::BELONGS_TO, 'SupportContactCategory', 'cat_id'),
+			'creation_TO' => array(self::BELONGS_TO, 'Users', 'creation_id'),
 			'modified_TO' => array(self::BELONGS_TO, 'Users', 'modified_id'),
-			'contact_MANY' => array(self::HAS_MANY, 'OmmuAuthorContact', 'author_id'),
 		);
 	}
 
@@ -96,17 +99,15 @@ class OmmuAuthors extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'author_id' => 'Author',
+			'widget_id' => 'Widget',
 			'publish' => 'Publish',
-			//'name' => 'Name',
-			//'email' => 'Email',
-			'name' => 'Nama',
-			'password' => 'Password',
+			'cat_id' => 'Cat',
+			'widget_source' => 'Widget Source',
 			'creation_date' => 'Creation Date',
+			'creation_id' => 'Creation',
 			'modified_date' => 'Modified Date',
 			'modified_id' => 'Modified',
-			//'author_phone' => 'Author Phone',
-			'author_phone' => 'Telepon',
+			'creation_search' => 'Creation',
 			'modified_search' => 'Modified',
 		);
 	}
@@ -129,37 +130,51 @@ class OmmuAuthors extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 
-		$criteria->compare('t.author_id',$this->author_id,true);
-		if(isset($_GET['type']) && $_GET['type'] == 'publish') {
+		$criteria->compare('t.widget_id',strtolower($this->widget_id),true);
+		if(isset($_GET['type']) && $_GET['type'] == 'publish')
 			$criteria->compare('t.publish',1);
-		} elseif(isset($_GET['type']) && $_GET['type'] == 'unpublish') {
+		elseif(isset($_GET['type']) && $_GET['type'] == 'unpublish')
 			$criteria->compare('t.publish',0);
-		} elseif(isset($_GET['type']) && $_GET['type'] == 'trash') {
+		elseif(isset($_GET['type']) && $_GET['type'] == 'trash')
 			$criteria->compare('t.publish',2);
-		} else {
+		else {
 			$criteria->addInCondition('t.publish',array(0,1));
 			$criteria->compare('t.publish',$this->publish);
 		}
-		$criteria->compare('t.name',$this->name,true);
-		$criteria->compare('t.email',$this->email,true);
-		$criteria->compare('t.password',$this->password,true);
+		if(isset($_GET['category']))
+			$criteria->compare('t.cat_id',$_GET['category']);
+		else
+			$criteria->compare('t.cat_id',$this->cat_id);
+		$criteria->compare('t.widget_source',strtolower($this->widget_source),true);
 		if($this->creation_date != null && !in_array($this->creation_date, array('0000-00-00 00:00:00', '0000-00-00')))
 			$criteria->compare('date(t.creation_date)',date('Y-m-d', strtotime($this->creation_date)));
+		if(isset($_GET['creation']))
+			$criteria->compare('t.creation_id',$_GET['creation']);
+		else
+			$criteria->compare('t.creation_id',$this->creation_id);
 		if($this->modified_date != null && !in_array($this->modified_date, array('0000-00-00 00:00:00', '0000-00-00')))
 			$criteria->compare('date(t.modified_date)',date('Y-m-d', strtotime($this->modified_date)));
-		$criteria->compare('t.modified_id',$this->modified_id);
+		if(isset($_GET['modified']))
+			$criteria->compare('t.modified_id',$_GET['modified']);
+		else
+			$criteria->compare('t.modified_id',$this->modified_id);
 		
 		// Custom Search
 		$criteria->with = array(
+			'creation_TO' => array(
+				'alias'=>'creation_TO',
+				'select'=>'displayname',
+			),
 			'modified_TO' => array(
 				'alias'=>'modified_TO',
-				'select'=>'displayname'
+				'select'=>'displayname',
 			),
 		);
+		$criteria->compare('creation_TO.displayname',strtolower($this->creation_search), true);
 		$criteria->compare('modified_TO.displayname',strtolower($this->modified_search), true);
 
-		if(!isset($_GET['OmmuAuthors_sort']))
-			$criteria->order = 't.author_id DESC';
+		if(!isset($_GET['SupportWidget_sort']))
+			$criteria->order = 't.widget_id DESC';
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -187,12 +202,12 @@ class OmmuAuthors extends CActiveRecord
 				$this->defaultColumns[] = $val;
 			}
 		} else {
-			//$this->defaultColumns[] = 'author_id';
+			//$this->defaultColumns[] = 'widget_id';
 			$this->defaultColumns[] = 'publish';
-			$this->defaultColumns[] = 'name';
-			$this->defaultColumns[] = 'email';
-			$this->defaultColumns[] = 'password';
+			$this->defaultColumns[] = 'cat_id';
+			$this->defaultColumns[] = 'widget_source';
 			$this->defaultColumns[] = 'creation_date';
+			$this->defaultColumns[] = 'creation_id';
 			$this->defaultColumns[] = 'modified_date';
 			$this->defaultColumns[] = 'modified_id';
 		}
@@ -217,9 +232,23 @@ class OmmuAuthors extends CActiveRecord
 				'header' => 'No',
 				'value' => '$this->grid->dataProvider->pagination->currentPage*$this->grid->dataProvider->pagination->pageSize + $row+1'
 			);
-			$this->defaultColumns[] = 'name';
-			$this->defaultColumns[] = 'email';
-			//$this->defaultColumns[] = 'password';
+			if(!isset($_GET['category'])) {
+				$this->defaultColumns[] = array(
+					'name' => 'cat_id',
+					'value' => 'Phrase::trans($data->cat_TO->name, 2)',
+					'filter'=> SupportContactCategory::getCategory(1),
+					'type' => 'raw',
+				);
+			}
+			$this->defaultColumns[] = array(
+				'name' => 'widget_source',
+				'value' => '$data->widget_source',
+				'type' => 'raw',
+			);
+			$this->defaultColumns[] = array(
+				'name' => 'creation_search',
+				'value' => '$data->creation_TO->displayname',
+			);
 			$this->defaultColumns[] = array(
 				'name' => 'creation_date',
 				'value' => 'Utility::dateFormat($data->creation_date)',
@@ -249,7 +278,7 @@ class OmmuAuthors extends CActiveRecord
 			if(!isset($_GET['type'])) {
 				$this->defaultColumns[] = array(
 					'name' => 'publish',
-					'value' => 'Utility::getPublish(Yii::app()->controller->createUrl("publish",array("id"=>$data->author_id)), $data->publish, 1)',
+					'value' => 'Utility::getPublish(Yii::app()->controller->createUrl("publish",array("id"=>$data->widget_id)), $data->publish, 1)',
 					'htmlOptions' => array(
 						'class' => 'center',
 					),
@@ -286,37 +315,12 @@ class OmmuAuthors extends CActiveRecord
 	 */
 	protected function beforeValidate() {
 		if(parent::beforeValidate()) {
-			if(!$this->isNewRecord)
-				$this->modified_id = Yii::app()->user->id;				
+			if($this->isNewRecord)
+				$this->creation_id = Yii::app()->user->id;		
+			else
+				$this->modified_id = Yii::app()->user->id;
 		}
 		return true;
-	}
-	
-	/**
-	 * before save attributes
-	 */
-	protected function beforeSave() {
-		if(parent::beforeSave()) {
-			$this->email = strtolower($this->email);
-		}
-		return true;	
-	}
-	
-	/**
-	 * After save attributes
-	 */
-	protected function afterSave() {
-		parent::afterSave();
-		
-		if($this->isNewRecord) {
-			if($this->author_phone != '') {
-				$contact = new OmmuAuthorContact;
-				$contact->author_id = $this->author_id;
-				$contact->type = 1;
-				$contact->contact = $this->author_phone;
-				$contact->save();
-			}
-		}
 	}
 
 }

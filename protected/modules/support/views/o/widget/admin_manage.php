@@ -1,18 +1,19 @@
 <?php
 /**
- * Banners (banners)
- * @var $this AdminController
- * @var $model Banners
+ * Support Widgets (support-widget)
+ * @var $this WidgetController
+ * @var $model SupportWidget
  *
  * @author Putra Sudaryanto <putra.sudaryanto@gmail.com>
- * @copyright Copyright (c) 2014 Ommu Platform (ommu.co)
- * @link https://github.com/oMMu/Ommu-Banner
+ * @copyright Copyright (c) 2016 Ommu Platform (ommu.co)
+ * @created date 3 February 2016, 12:26 WIB
+ * @link http://company.ommu.co
  * @contect (+62)856-299-4114
  *
  */
 
 	$this->breadcrumbs=array(
-		'Banners'=>array('manage'),
+		'Support Widgets'=>array('manage'),
 		'Manage',
 	);
 	$this->menu=array(
@@ -29,6 +30,7 @@
 			'linkOptions' => array('title' => Phrase::trans(308,0)),
 		),
 	);
+
 ?>
 
 <?php //begin.Search ?>
@@ -47,7 +49,7 @@
 </div>
 <?php //end.Grid Option ?>
 
-<div id="partial-banners">
+<div id="partial-support-widget">
 	<?php //begin.Messages ?>
 	<div id="ajax-message">
 	<?php
@@ -86,11 +88,11 @@
 						),
 						'url' => 'Yii::app()->controller->createUrl("delete",array("id"=>$data->primaryKey))')
 				),
-				'template' => '{view}|{update}|{delete}',
+				'template' => '{update}|{delete}',
 			));
 
 			$this->widget('application.components.system.OGridView', array(
-				'id'=>'banners-grid',
+				'id'=>'support-widget-grid',
 				'dataProvider'=>$model->search(),
 				'filter'=>$model,
 				'columns' => $columnData,

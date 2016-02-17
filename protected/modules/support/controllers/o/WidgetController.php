@@ -1,8 +1,8 @@
 <?php
 /**
- * ContactController
- * @var $this ContactController
- * @var $model SupportMails
+ * WidgetController
+ * @var $this WidgetController
+ * @var $model SupportWidget
  * @var $form CActiveForm
  * version: 0.0.1
  * Reference start
@@ -15,20 +15,20 @@
  *	RunAction
  *	Delete
  *	Publish
- *	Setting
  *
  *	LoadModel
  *	performAjaxValidation
  *
  * @author Putra Sudaryanto <putra.sudaryanto@gmail.com>
- * @copyright Copyright (c) 2012 Ommu Platform (ommu.co)
- * @link https://github.com/oMMu/Ommu-Support
+ * @copyright Copyright (c) 2016 Ommu Platform (ommu.co)
+ * @created date 3 February 2016, 12:26 WIB
+ * @link http://company.ommu.co
  * @contect (+62)856-299-4114
  *
  *----------------------------------------------------------------------------------------------------------
  */
 
-class ContactController extends Controller
+class WidgetController extends Controller
 {
 	/**
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
@@ -43,7 +43,7 @@ class ContactController extends Controller
 	public function init() 
 	{
 		if(!Yii::app()->user->isGuest) {
-			if(in_array(Yii::app()->user->level, array(1,2))) {
+			if(Yii::app()->user->level == 1) {
 				$arrThemes = Utility::getCurrentTemplate('admin');
 				Yii::app()->theme = $arrThemes['folder'];
 				$this->layout = $arrThemes['layout'];
@@ -85,12 +85,7 @@ class ContactController extends Controller
 				//'expression'=>'isset(Yii::app()->user->level) && (Yii::app()->user->level != 1)',
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('manage','edit','setting'),
-				'users'=>array('@'),
-				'expression'=>'isset(Yii::app()->user->level) && in_array(Yii::app()->user->level, array(1,2))',
-			),
-			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('add','runaction','delete','publish'),
+				'actions'=>array('manage','add','edit','runaction','delete','publish'),
 				'users'=>array('@'),
 				'expression'=>'isset(Yii::app()->user->level) && (Yii::app()->user->level == 1)',
 			),
@@ -117,10 +112,10 @@ class ContactController extends Controller
 	 */
 	public function actionManage() 
 	{
-		$model=new SupportContacts('search');
+		$model=new SupportWidget('search');
 		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['SupportContacts'])) {
-			$model->attributes=$_GET['SupportContacts'];
+		if(isset($_GET['SupportWidget'])) {
+			$model->attributes=$_GET['SupportWidget'];
 		}
 
 		$columnTemp = array();
@@ -133,7 +128,7 @@ class ContactController extends Controller
 		}
 		$columns = $model->getGridColumn($columnTemp);
 
-		$this->pageTitle = Phrase::trans(23061,1);
+		$this->pageTitle = 'Support Widgets Manage';
 		$this->pageDescription = '';
 		$this->pageMeta = '';
 		$this->render('admin_manage',array(
@@ -148,26 +143,26 @@ class ContactController extends Controller
 	 */
 	public function actionAdd() 
 	{
-		$model=new SupportContacts;
+		$model=new SupportWidget;
 
 		// Uncomment the following line if AJAX validation is needed
 		$this->performAjaxValidation($model);
 
-		if(isset($_POST['SupportContacts'])) {
-			$model->attributes=$_POST['SupportContacts'];
-
+		if(isset($_POST['SupportWidget'])) {
+			$model->attributes=$_POST['SupportWidget'];
+			
 			$jsonError = CActiveForm::validate($model);
 			if(strlen($jsonError) > 2) {
 				echo $jsonError;
-				
+
 			} else {
 				if(isset($_GET['enablesave']) && $_GET['enablesave'] == 1) {
 					if($model->save()) {
 						echo CJSON::encode(array(
 							'type' => 5,
 							'get' => Yii::app()->controller->createUrl('manage'),
-							'id' => 'partial-support-contacts',
-							'msg' => '<div class="errorSummary success"><strong>'.Phrase::trans(23072,1).'</strong></div>',
+							'id' => 'partial-support-widget',
+							'msg' => '<div class="errorSummary success"><strong>SupportWidget success created.</strong></div>',
 						));
 					} else {
 						print_r($model->getErrors());
@@ -179,9 +174,9 @@ class ContactController extends Controller
 		} else {
 			$this->dialogDetail = true;
 			$this->dialogGroundUrl = Yii::app()->controller->createUrl('manage');
-			$this->dialogWidth = 600;
-			
-			$this->pageTitle = 'Create Contact';
+			$this->dialogWidth = 550;
+
+			$this->pageTitle = 'Create Support Widgets';
 			$this->pageDescription = '';
 			$this->pageMeta = '';
 			$this->render('admin_add',array(
@@ -202,10 +197,9 @@ class ContactController extends Controller
 		// Uncomment the following line if AJAX validation is needed
 		$this->performAjaxValidation($model);
 
-		if(isset($_POST['SupportContacts'])) {
-			$model->attributes=$_POST['SupportContacts'];
-			$model->scenario = 'default';
-
+		if(isset($_POST['SupportWidget'])) {
+			$model->attributes=$_POST['SupportWidget'];
+			
 			$jsonError = CActiveForm::validate($model);
 			if(strlen($jsonError) > 2) {
 				echo $jsonError;
@@ -216,8 +210,8 @@ class ContactController extends Controller
 						echo CJSON::encode(array(
 							'type' => 5,
 							'get' => Yii::app()->controller->createUrl('manage'),
-							'id' => 'partial-support-contacts',
-							'msg' => '<div class="errorSummary success"><strong>'.Phrase::trans(23073,1).'</strong></div>',
+							'id' => 'partial-support-widget',
+							'msg' => '<div class="errorSummary success"><strong>SupportWidget success updated.</strong></div>',
 						));
 					} else {
 						print_r($model->getErrors());
@@ -225,18 +219,18 @@ class ContactController extends Controller
 				}
 			}
 			Yii::app()->end();
-
+			
 		} else {
 			$this->dialogDetail = true;
 			$this->dialogGroundUrl = Yii::app()->controller->createUrl('manage');
-			$this->dialogWidth = 600;
-			
-			$this->pageTitle = Phrase::trans(23074,1);
+			$this->dialogWidth = 550;
+
+			$this->pageTitle = 'Update Support Widgets';
 			$this->pageDescription = '';
 			$this->pageMeta = '';
 			$this->render('admin_edit',array(
 				'model'=>$model,
-			));
+			));			
 		}
 	}
 
@@ -254,19 +248,19 @@ class ContactController extends Controller
 			$criteria->addInCondition('id', $id);
 
 			if($actions == 'publish') {
-				SupportContacts::model()->updateAll(array(
-					'published' => 1,
+				SupportWidget::model()->updateAll(array(
+					'publish' => 1,
 				),$criteria);
 			} elseif($actions == 'unpublish') {
-				SupportContacts::model()->updateAll(array(
-					'published' => 0,
+				SupportWidget::model()->updateAll(array(
+					'publish' => 0,
 				),$criteria);
 			} elseif($actions == 'trash') {
-				SupportContacts::model()->updateAll(array(
-					'published' => 2,
+				SupportWidget::model()->updateAll(array(
+					'publish' => 2,
 				),$criteria);
 			} elseif($actions == 'delete') {
-				SupportContacts::model()->deleteAll($criteria);
+				SupportWidget::model()->deleteAll($criteria);
 			}
 		}
 
@@ -283,17 +277,19 @@ class ContactController extends Controller
 	 */
 	public function actionDelete($id) 
 	{
+		$model=$this->loadModel($id);
+		
 		if(Yii::app()->request->isPostRequest) {
 			// we only allow deletion via POST request
 			if(isset($id)) {
-				$this->loadModel($id)->delete();
-
-				echo CJSON::encode(array(
-					'type' => 5,
-					'get' => Yii::app()->controller->createUrl('manage'),
-					'id' => 'partial-support-contacts',
-					'msg' => '<div class="errorSummary success"><strong>'.Phrase::trans(23076,1).'</strong></div>',
-				));
+				if($model->delete()) {
+					echo CJSON::encode(array(
+						'type' => 5,
+						'get' => Yii::app()->controller->createUrl('manage'),
+						'id' => 'partial-support-widget',
+						'msg' => '<div class="errorSummary success"><strong>SupportWidget success deleted.</strong></div>',
+					));
+				}
 			}
 
 		} else {
@@ -301,7 +297,7 @@ class ContactController extends Controller
 			$this->dialogGroundUrl = Yii::app()->controller->createUrl('manage');
 			$this->dialogWidth = 350;
 
-			$this->pageTitle = Phrase::trans(23075,1);
+			$this->pageTitle = 'SupportWidget Delete.';
 			$this->pageDescription = '';
 			$this->pageMeta = '';
 			$this->render('admin_delete');
@@ -316,6 +312,7 @@ class ContactController extends Controller
 	public function actionPublish($id) 
 	{
 		$model=$this->loadModel($id);
+		
 		if($model->publish == 1) {
 			$title = Phrase::trans(276,0);
 			$replace = 0;
@@ -334,8 +331,8 @@ class ContactController extends Controller
 					echo CJSON::encode(array(
 						'type' => 5,
 						'get' => Yii::app()->controller->createUrl('manage'),
-						'id' => 'partial-support-contacts',
-						'msg' => '<div class="errorSummary success"><strong>'.Phrase::trans(23073,1).'</strong></div>',
+						'id' => 'partial-support-widget',
+						'msg' => '<div class="errorSummary success"><strong>SupportWidget success published.</strong></div>',
 					));
 				}
 			}
@@ -356,68 +353,13 @@ class ContactController extends Controller
 	}
 
 	/**
-	 * Updates a particular model.
-	 * If update is successful, the browser will be redirected to the 'view' page.
-	 * @param integer $id the ID of the model to be updated
-	 */
-	public function actionSetting() 
-	{
-		$model = OmmuMeta::model()->findByPk(1);
-
-		// Uncomment the following line if AJAX validation is needed
-		$this->performAjaxValidation($model);
-
-		if(isset($_POST['OmmuMeta'])) {
-			$model->attributes=$_POST['OmmuMeta'];
-			$model->scenario = 'contact';
-
-			$jsonError = CActiveForm::validate($model);
-			if(strlen($jsonError) > 2) {
-				$errors = $model->getErrors();
-				$summary['msg'] = "<div class='errorSummary'><strong>".Phrase::trans(163,0)."</strong>";
-				$summary['msg'] .= "<ul>";
-				foreach($errors as $key => $value) {
-					$summary['msg'] .= "<li>{$value[0]}</li>";
-				}
-				$summary['msg'] .= "</ul></div>";
-
-				$message = json_decode($jsonError, true);
-				$merge = array_merge_recursive($summary, $message);
-				$encode = json_encode($merge);
-				echo $encode;
-
-			} else {
-				if(isset($_GET['enablesave']) && $_GET['enablesave'] == 1) {
-					if($model->save()) {
-						echo CJSON::encode(array(
-							'type' => 0,
-							'msg' => '<div class="errorSummary success"><strong>'.Phrase::trans(23077,1).'</strong></div>',
-						));
-					} else {
-						print_r($model->getErrors());
-					}
-				}
-			}
-			Yii::app()->end();
-
-		} else {
-			$this->pageTitle = Phrase::trans(23063,1);
-			$this->pageDescription = '';
-			$this->pageMeta = '';
-			$this->render('admin_setting',array(
-				'model'=>$model,
-			));
-		}
-	}
-
-	/**
 	 * Returns the data model based on the primary key given in the GET variable.
 	 * If the data model is not found, an HTTP exception will be raised.
 	 * @param integer the ID of the model to be loaded
 	 */
 	public function loadModel($id) 
 	{
-		$model = SupportContacts::model()->findByPk($id);
+		$model = SupportWidget::model()->findByPk($id);
 		if($model===null)
 			throw new CHttpException(404, Phrase::trans(193,0));
 		return $model;
@@ -429,10 +371,9 @@ class ContactController extends Controller
 	 */
 	protected function performAjaxValidation($model) 
 	{
-		if(isset($_POST['ajax']) && $_POST['ajax']==='support-contacts-form') {
+		if(isset($_POST['ajax']) && $_POST['ajax']==='support-widget-form') {
 			echo CActiveForm::validate($model);
 			Yii::app()->end();
 		}
 	}
-
 }
