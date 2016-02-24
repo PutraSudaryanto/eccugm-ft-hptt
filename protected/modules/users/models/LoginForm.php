@@ -10,14 +10,13 @@
  * LoginForm is the data structure for keeping
  * user login form data. It is used by the 'login' action of 'SiteController'.
  */
- 
-class LoginFormAdmin extends CFormModel
+
+class LoginForm extends CFormModel
 {
 	public $email;
 	public $password;
 	public $rememberMe;
 	private $_identity;
-	public $token;
 
 	/**
 	 * Declares the validation rules.
@@ -28,12 +27,11 @@ class LoginFormAdmin extends CFormModel
 	{
 		return array(
 			// email and password are required
-			array('email, password', 'required'),
-
-			//array('email', 'email'),
+			array('email', 'required', 'on'=>'loginemail, loginpassword'),
+			array('password', 'required', 'on'=>'loginpassword'),
+			array('email', 'email'),
 			// rememberMe needs to be a boolean
 			array('rememberMe', 'boolean'),
-            array('token', 'length', 'max'=>32),
 			// password needs to be authenticated
 			array('password', 'authenticate'),
 			array('email, password', 'safe'),
@@ -72,9 +70,6 @@ class LoginFormAdmin extends CFormModel
 				case UserIdentity::ERROR_USERNAME_INVALID:
 					$this->addError('email','Email address is incorrect.');
 					break;
-				default: //UserIdentity::ERROR_PASSWORD_INVALID
-					$this->addError('password','Password is incorrect.');
-					break;
 			}
 		}
 	}
@@ -87,10 +82,7 @@ class LoginFormAdmin extends CFormModel
 	{
 		if($this->_identity===null)
 		{
-			if($this->token !== null)
-				$this->_identity=new UserIdentity($this->email,$this->password, $this->token);
-			else 			
-				$this->_identity=new UserIdentity($this->email,$this->password);
+			$this->_identity=new UserIdentity($this->email,$this->password);
 			$this->_identity->authenticate();
 		}
 		if($this->_identity->errorCode===UserIdentity::ERROR_NONE)
@@ -101,5 +93,21 @@ class LoginFormAdmin extends CFormModel
 		}
 		else
 			return false;
+	}
+
+	/**
+	 * before validate attributes
+	 */
+	protected function beforeValidate() 
+	{
+		if(parent::beforeValidate()) {	
+			if($this->password != '') {
+				$user = Users::model()->findByAttributes(array('email' => $this->email));
+				if($user !== null && $user->password !== Users::hashPassword($user->salt,$this->password)) {
+					$this->addError('password', 'Password is incorrect.');
+				}
+			}
+		}
+		return true;
 	}
 }
