@@ -64,8 +64,21 @@ mklink /J "D:\htdocs\_client_hptt.ft.ugm.ac.id\protected\modules\users\component
 mklink /J "D:\htdocs\_client_hptt.ft.ugm.ac.id\protected\modules\users\models" "D:\htdocs\_project_ommu_module_users\modules\users_manage\models"
 --
 mklink /J "D:\htdocs\_client_hptt.ft.ugm.ac.id\protected\modules\users\controllers\o" "D:\htdocs\_project_ommu_module_users\modules\users_manage\controllers\o"
+mklink /H "D:\htdocs\_client_hptt.ft.ugm.ac.id\protected\modules\users\controllers\AccountController.php" "D:\htdocs\_project_ommu_module_users\modules\users_manage\controllers\AccountController.php"
+mklink /H "D:\htdocs\_client_hptt.ft.ugm.ac.id\protected\modules\users\controllers\AdminController.php" "D:\htdocs\_project_ommu_module_users\modules\users_manage\controllers\AdminController.php"
+mklink /H "D:\htdocs\_client_hptt.ft.ugm.ac.id\protected\modules\users\controllers\ForgotController.php" "D:\htdocs\_project_ommu_module_users\modules\users_manage\controllers\ForgotController.php"
+mklink /H "D:\htdocs\_client_hptt.ft.ugm.ac.id\protected\modules\users\controllers\InviteController.php" "D:\htdocs\_project_ommu_module_users\modules\users_manage\controllers\InviteController.php"
+mklink /H "D:\htdocs\_client_hptt.ft.ugm.ac.id\protected\modules\users\controllers\NewsletterController.php" "D:\htdocs\_project_ommu_module_users\modules\users_manage\controllers\NewsletterController.php"
+mklink /H "D:\htdocs\_client_hptt.ft.ugm.ac.id\protected\modules\users\controllers\PhotoController.php" "D:\htdocs\_project_ommu_module_users\modules\users_manage\controllers\PhotoController.php"
+mklink /H "D:\htdocs\_client_hptt.ft.ugm.ac.id\protected\modules\users\controllers\VerifyController.php" "D:\htdocs\_project_ommu_module_users\modules\users_manage\controllers\VerifyController.php"
 --
 mklink /J "D:\htdocs\_client_hptt.ft.ugm.ac.id\protected\modules\users\views\o" "D:\htdocs\_project_ommu_module_users\modules\users_manage\views\o"
+mklink /J "D:\htdocs\_client_hptt.ft.ugm.ac.id\protected\modules\users\views\account" "D:\htdocs\_project_ommu_module_users\modules\users_manage\views\account"
+mklink /J "D:\htdocs\_client_hptt.ft.ugm.ac.id\protected\modules\users\views\admin" "D:\htdocs\_project_ommu_module_users\modules\users_manage\views\admin"
+mklink /J "D:\htdocs\_client_hptt.ft.ugm.ac.id\protected\modules\users\views\forgot" "D:\htdocs\_project_ommu_module_users\modules\users_manage\views\forgot"
+mklink /J "D:\htdocs\_client_hptt.ft.ugm.ac.id\protected\modules\users\views\invite" "D:\htdocs\_project_ommu_module_users\modules\users_manage\views\invite"
+mklink /J "D:\htdocs\_client_hptt.ft.ugm.ac.id\protected\modules\users\views\newsletter" "D:\htdocs\_project_ommu_module_users\modules\users_manage\views\newsletter"
+mklink /J "D:\htdocs\_client_hptt.ft.ugm.ac.id\protected\modules\users\views\verify" "D:\htdocs\_project_ommu_module_users\modules\users_manage\views\verify"
 
 ///report\\\
 mklink /J "D:\htdocs\_product_oos_library_system\externals\report" "D:\htdocs\_project_ommu_module_reports\externals\report"

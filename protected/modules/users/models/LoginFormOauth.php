@@ -1,8 +1,8 @@
 <?php
 /**
- * LoginFormAdmin
+ * LoginFormOauth
  * @author Putra Sudaryanto <putra.sudaryanto@gmail.com>
- * @copyright Copyright (c) 2012 Ommu Platform (ommu.co)
+ * @copyright Copyright (c) 2015 Ommu Platform (ommu.co)
  * @link https://github.com/oMMu/Ommu-Core
  * @contact (+62)856-299-4114
  *
@@ -11,12 +11,13 @@
  * user login form data. It is used by the 'login' action of 'SiteController'.
  */
 
-class LoginForm extends CFormModel
+class LoginFormOauth extends CFormModel
 {
 	public $email;
 	public $password;
 	public $rememberMe;
 	private $_identity;
+	public $token;
 
 	/**
 	 * Declares the validation rules.
@@ -27,12 +28,12 @@ class LoginForm extends CFormModel
 	{
 		return array(
 			// email and password are required
-			array('email', 'required', 'on'=>'loginemail, loginpassword'),
-			array('password', 'required', 'on'=>'loginpassword'),
+			array('email, password', 'required'),
+
 			//array('email', 'email'),
 			// rememberMe needs to be a boolean
 			array('rememberMe', 'boolean'),
-            array('email', 'length', 'max'=>32),
+            array('token', 'length', 'max'=>32),
 			// password needs to be authenticated
 			array('password', 'authenticate'),
 			array('email, password', 'safe'),
@@ -60,16 +61,22 @@ class LoginForm extends CFormModel
 		// we only want to authenticate when no input errors
 		if(!$this->hasErrors())
 		{
-			$this->_identity=new UserIdentity($this->email,$this->password);
+			$this->_identity=new OauthIdentity($this->email,$this->password);
 			$this->_identity->authenticate();
 
 			switch($this->_identity->errorCode)
 			{
-				case UserIdentity::ERROR_NONE:
+				case OauthIdentity::ERROR_NONE:
 					Yii::app()->user->login($this->_identity);
 					break;
-				case UserIdentity::ERROR_USERNAME_INVALID:
+				case OauthIdentity::ERROR_USERNAME_INVALID:
 					$this->addError('email','Email address is incorrect.');
+					break;
+				case OauthIdentity::ERROR_PASSWORD_INVALID:
+					$this->addError('password','Password is incorrect.');
+					break;
+				default: //OauthIdentity::ERROR_TOKEN_INVALID
+					$this->addError('password','Token is incorrect.');
 					break;
 			}
 		}
@@ -83,10 +90,13 @@ class LoginForm extends CFormModel
 	{
 		if($this->_identity===null)
 		{
-			$this->_identity=new UserIdentity($this->email,$this->password);
+			if($this->token !== null)
+				$this->_identity=new OauthIdentity($this->email,$this->password, $this->token);
+			else 			
+				$this->_identity=new OauthIdentity($this->email,$this->password);
 			$this->_identity->authenticate();
 		}
-		if($this->_identity->errorCode===UserIdentity::ERROR_NONE)
+		if($this->_identity->errorCode===OauthIdentity::ERROR_NONE)
 		{
 			$duration=$this->rememberMe ? 3600*24*30 : 0; // 30 days
 			Yii::app()->user->login($this->_identity,$duration);
@@ -94,21 +104,5 @@ class LoginForm extends CFormModel
 		}
 		else
 			return false;
-	}
-
-	/**
-	 * before validate attributes
-	 */
-	protected function beforeValidate() 
-	{
-		if(parent::beforeValidate()) {	
-			if($this->password != '') {
-				$user = Users::model()->findByAttributes(array('email' => $this->email));
-				if($user !== null && $user->password !== Users::hashPassword($user->salt,$this->password)) {
-					$this->addError('password', 'Password is incorrect.');
-				}
-			}
-		}
-		return true;
 	}
 }
