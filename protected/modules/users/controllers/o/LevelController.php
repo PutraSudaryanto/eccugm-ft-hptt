@@ -12,8 +12,6 @@
  *	Manage
  *	Add
  *	Edit
- *	User
- *	Message
  *	Delete
  *	Default
  *
@@ -21,8 +19,9 @@
  *	performAjaxValidation
  *
  * @author Putra Sudaryanto <putra.sudaryanto@gmail.com>
- * @copyright Copyright (c) 2012 Ommu Platform (ommu.co)
- * @link https://github.com/oMMu/Ommu-Users
+ * @copyright Copyright (c) 2016 Ommu Platform (ommu.co)
+ * @created date 25 February 2016, 15:46 WIB
+ * @link http://company.ommu.co
  * @contect (+62)856-299-4114
  *
  *----------------------------------------------------------------------------------------------------------
@@ -82,9 +81,10 @@ class LevelController extends Controller
 				'actions'=>array(),
 				'users'=>array('@'),
 				'expression'=>'isset(Yii::app()->user->level)',
+				//'expression'=>'isset(Yii::app()->user->level) && (Yii::app()->user->level != 1)',
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('manage','add','edit','user','message','delete','default'),
+				'actions'=>array('manage','add','edit','delete','default'),
 				'users'=>array('@'),
 				'expression'=>'isset(Yii::app()->user->level) && (Yii::app()->user->level == 1)',
 			),
@@ -103,7 +103,7 @@ class LevelController extends Controller
 	 */
 	public function actionIndex() 
 	{
-		$this->redirect(array('manage'));
+		$this-redirect(array('manage'));
 	}
 
 	/**
@@ -127,14 +127,13 @@ class LevelController extends Controller
 		}
 		$columns = $model->getGridColumn($columnTemp);
 
-		$this->pageTitle = Phrase::trans(16004,1);
-		$this->pageDescription = Phrase::trans(16005,1);
+		$this->pageTitle = 'User Levels Manage';
+		$this->pageDescription = '';
 		$this->pageMeta = '';
 		$this->render('admin_manage',array(
 			'model'=>$model,
 			'columns' => $columns,
 		));
-
 	}	
 	
 	/**
@@ -150,39 +149,38 @@ class LevelController extends Controller
 
 		if(isset($_POST['UserLevel'])) {
 			$model->attributes=$_POST['UserLevel'];
-			$model->scenario = 'info';
-
+			
 			$jsonError = CActiveForm::validate($model);
 			if(strlen($jsonError) > 2) {
 				echo $jsonError;
+
 			} else {
 				if(isset($_GET['enablesave']) && $_GET['enablesave'] == 1) {
 					if($model->save()) {
 						echo CJSON::encode(array(
 							'type' => 5,
 							'get' => Yii::app()->controller->createUrl('manage'),
-							'id' => 'partial-levels',
-							'msg' => '<div class="errorSummary success"><strong>'.Phrase::trans(16006,1).'</strong></div>',
+							'id' => 'partial-user-level',
+							'msg' => '<div class="errorSummary success"><strong>UserLevel success created.</strong></div>',
 						));
 					} else {
 						print_r($model->getErrors());
 					}
 				}
 			}
-			Yii::app()->end();
-
-		} else {
-			$this->dialogDetail = true;
-			$this->dialogGroundUrl = Yii::app()->controller->createUrl('manage');
-			$this->dialogWidth = 500;
-
-			$this->pageTitle = Phrase::trans(16010,1);
-			$this->pageDescription = '';
-			$this->pageMeta = '';
-			$this->render('admin_add',array(
-				'model'=>$model,
-			));
+			Yii::app()->end();			
 		}
+		
+		$this->dialogDetail = true;
+		$this->dialogGroundUrl = Yii::app()->controller->createUrl('manage');
+		$this->dialogWidth = 550;
+
+		$this->pageTitle = 'Create User Levels';
+		$this->pageDescription = '';
+		$this->pageMeta = '';
+		$this->render('admin_add',array(
+			'model'=>$model,
+		));
 	}
 
 	/**
@@ -199,158 +197,40 @@ class LevelController extends Controller
 
 		if(isset($_POST['UserLevel'])) {
 			$model->attributes=$_POST['UserLevel'];
-			$model->scenario = 'info';
-
+			
 			$jsonError = CActiveForm::validate($model);
 			if(strlen($jsonError) > 2) {
-				$errors = $model->getErrors();
-				$summary['msg'] = "<div class='errorSummary'><strong>".Phrase::trans(163,0)."</strong>";
-				$summary['msg'] .= "<ul>";
-				foreach($errors as $key => $value) {
-					$summary['msg'] .= "<li>{$value[0]}</li>";
-				}
-				$summary['msg'] .= "</ul></div>";
-
-				$message = json_decode($jsonError, true);
-				$merge = array_merge_recursive($summary, $message);
-				$encode = json_encode($merge);
-				echo $encode;
+				echo $jsonError;
 
 			} else {
 				if(isset($_GET['enablesave']) && $_GET['enablesave'] == 1) {
 					if($model->save()) {
 						echo CJSON::encode(array(
-							'type' => 0,
-							'msg' => '<div class="errorSummary success"><strong>'.Phrase::trans(16007,1).'</strong></div>',
+							'type' => 5,
+							'get' => Yii::app()->controller->createUrl('manage'),
+							'id' => 'partial-user-level',
+							'msg' => '<div class="errorSummary success"><strong>UserLevel success updated.</strong></div>',
 						));
 					} else {
 						print_r($model->getErrors());
 					}
 				}
 			}
-			Yii::app()->end();
-
-		} else {
-			$this->pageTitle = Phrase::trans(16011,1).': '.Phrase::trans($model->name,2);
-			$this->pageDescription = Phrase::trans(16012,1);
-			$this->pageMeta = '';
-			$this->render('admin_edit',array(
-				'model'=>$model,
-			));
+			Yii::app()->end();			
 		}
+		
+		$this->dialogDetail = true;
+		$this->dialogGroundUrl = Yii::app()->controller->createUrl('manage');
+		$this->dialogWidth = 550;
+
+		$this->pageTitle = 'Update User Levels';
+		$this->pageDescription = '';
+		$this->pageMeta = '';
+		$this->render('admin_edit',array(
+			'model'=>$model,
+		));
 	}
-
-	/**
-	 * Updates a particular model.
-	 * If update is successful, the browser will be redirected to the 'view' page.
-	 * @param integer $id the ID of the model to be updated
-	 */
-	public function actionUser($id) 
-	{
-		$model=$this->loadModel($id);
-
-		// Uncomment the following line if AJAX validation is needed
-		$this->performAjaxValidation($model);
-
-		if(isset($_POST['UserLevel'])) {
-			$model->attributes=$_POST['UserLevel'];
-			$model->scenario = 'user';
-
-			$jsonError = CActiveForm::validate($model);
-			if(strlen($jsonError) > 2) {
-				$errors = $model->getErrors();
-				$summary['msg'] = "<div class='errorSummary'><strong>".Phrase::trans(163,0)."</strong>";
-				$summary['msg'] .= "<ul>";
-				foreach($errors as $key => $value) {
-					$summary['msg'] .= "<li>{$value[0]}</li>";
-				}
-				$summary['msg'] .= "</ul></div>";
-
-				$message = json_decode($jsonError, true);
-				$merge = array_merge_recursive($summary, $message);
-				$encode = json_encode($merge);
-				echo $encode;
-
-			} else {
-				if(isset($_GET['enablesave']) && $_GET['enablesave'] == 1) {
-					if($model->save()) {
-						echo CJSON::encode(array(
-							'type' => 0,
-							'msg' => '<div class="errorSummary success"><strong>'.Phrase::trans(16017,1).'</strong></div>',
-						));
-					} else {
-						print_r($model->getErrors());
-					}
-				}
-			}
-			Yii::app()->end();
-
-		} else {
-			$this->pageTitle = Phrase::trans(16011,1).': '.Phrase::trans($model->name,2);
-			$this->pageDescription = Phrase::trans(16012,1);
-			$this->pageMeta = '';
-			$this->render('admin_user',array(
-				'model'=>$model,
-			));
-		}
-	}
-
-	/**
-	 * Updates a particular model.
-	 * If update is successful, the browser will be redirected to the 'view' page.
-	 * @param integer $id the ID of the model to be updated
-	 */
-	public function actionMessage($id) 
-	{
-		$model=$this->loadModel($id);
-
-		// Uncomment the following line if AJAX validation is needed
-		$this->performAjaxValidation($model);
-
-		if(isset($_POST['UserLevel'])) {
-			$model->attributes=$_POST['UserLevel'];
-			$model->scenario = 'message';
-
-			$jsonError = CActiveForm::validate($model);
-			if(strlen($jsonError) > 2) {
-				$errors = $model->getErrors();
-				$summary['msg'] = "<div class='errorSummary'><strong>".Phrase::trans(163,0)."</strong>";
-				$summary['msg'] .= "<ul>";
-				foreach($errors as $key => $value) {
-					$summary['msg'] .= "<li>{$value[0]}</li>";
-				}
-				$summary['msg'] .= "</ul></div>";
-
-				$message = json_decode($jsonError, true);
-				$merge = array_merge_recursive($summary, $message);
-				$encode = json_encode($merge);
-				echo $encode;
-
-			} else {
-				if(isset($_GET['enablesave']) && $_GET['enablesave'] == 1) {
-					if($model->save()) {
-						echo CJSON::encode(array(
-							'type' => 0,
-							'msg' => '<div class="errorSummary success"><strong>'.Phrase::trans(16018,1).'</strong></div>',
-						));
-					} else {
-						print_r($model->getErrors());
-					}
-				}
-			}
-			Yii::app()->end();
-
-		} else {
-			$this->pageTitle = Phrase::trans(16011,1).': '.Phrase::trans($model->name,2);
-			$this->pageDescription = Phrase::trans(16012,1);
-			$this->pageMeta = '';
-			$this->render('admin_message',array(
-				'model'=>$model,
-			));
-		}
-	}
-
-
+	
 	/**
 	 * Deletes a particular model.
 	 * If deletion is successful, the browser will be redirected to the 'admin' page.
@@ -358,17 +238,19 @@ class LevelController extends Controller
 	 */
 	public function actionDelete($id) 
 	{
+		$model=$this->loadModel($id);
+		
 		if(Yii::app()->request->isPostRequest) {
 			// we only allow deletion via POST request
 			if(isset($id)) {
-				$this->loadModel($id)->delete();
-
-				echo CJSON::encode(array(
-					'type' => 5,
-					'get' => Yii::app()->controller->createUrl('manage'),
-					'id' => 'partial-levels',
-					'msg' => '<div class="errorSummary success"><strong>'.Phrase::trans(16008,1).'</strong></div>',
-				));
+				if($model->delete()) {
+					echo CJSON::encode(array(
+						'type' => 5,
+						'get' => Yii::app()->controller->createUrl('manage'),
+						'id' => 'partial-user-level',
+						'msg' => '<div class="errorSummary success"><strong>UserLevel success deleted.</strong></div>',
+					));
+				}
 			}
 
 		} else {
@@ -376,7 +258,7 @@ class LevelController extends Controller
 			$this->dialogGroundUrl = Yii::app()->controller->createUrl('manage');
 			$this->dialogWidth = 350;
 
-			$this->pageTitle = Phrase::trans(215,0);
+			$this->pageTitle = 'UserLevel Delete.';
 			$this->pageDescription = '';
 			$this->pageMeta = '';
 			$this->render('admin_delete');

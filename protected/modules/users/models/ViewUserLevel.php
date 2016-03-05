@@ -2,8 +2,9 @@
 /**
  * ViewUserLevel
  * @author Putra Sudaryanto <putra.sudaryanto@gmail.com>
- * @copyright Copyright (c) 2015 Ommu Platform (ommu.co)
- * @link https://github.com/oMMu/Ommu-Users
+ * @copyright Copyright (c) 2016 Ommu Platform (ommu.co)
+ * @created date 24 February 2016, 18:00 WIB
+ * @link http://company.ommu.co
  * @contact (+62)856-299-4114
  *
  * This is the template for generating the model class of a specified table.
@@ -17,12 +18,13 @@
  *
  * --------------------------------------------------------------------------------------
  *
- * This is the model class for table "_view_user_level".
+ * This is the model class for table "_view_user_oauth_level".
  *
- * The followings are the available columns in table '_view_user_level':
+ * The followings are the available columns in table '_view_user_oauth_level':
  * @property integer $level_id
  * @property string $level_name
  * @property string $level_desc
+ * @property string $oauths
  */
 class ViewUserLevel extends CActiveRecord
 {
@@ -44,7 +46,7 @@ class ViewUserLevel extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return '_view_user_level';
+		return '_view_user_oauth_level';
 	}
 
 	/**
@@ -64,10 +66,11 @@ class ViewUserLevel extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('level_id', 'numerical', 'integerOnly'=>true),
+			array('oauths', 'length', 'max'=>21),
 			array('level_name, level_desc', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('level_id, level_name, level_desc', 'safe', 'on'=>'search'),
+			array('level_id, level_name, level_desc, oauths', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -91,6 +94,7 @@ class ViewUserLevel extends CActiveRecord
 			'level_id' => 'Level',
 			'level_name' => 'Level Name',
 			'level_desc' => 'Level Desc',
+			'oauths' => 'Oauths',
 		);
 	}
 
@@ -115,6 +119,7 @@ class ViewUserLevel extends CActiveRecord
 		$criteria->compare('t.level_id',$this->level_id);
 		$criteria->compare('t.level_name',strtolower($this->level_name),true);
 		$criteria->compare('t.level_desc',strtolower($this->level_desc),true);
+		$criteria->compare('t.oauths',strtolower($this->oauths),true);
 
 		if(!isset($_GET['ViewUserLevel_sort']))
 			$criteria->order = 't.level_id DESC';
@@ -148,6 +153,7 @@ class ViewUserLevel extends CActiveRecord
 			$this->defaultColumns[] = 'level_id';
 			$this->defaultColumns[] = 'level_name';
 			$this->defaultColumns[] = 'level_desc';
+			$this->defaultColumns[] = 'oauths';
 		}
 
 		return $this->defaultColumns;
@@ -158,12 +164,10 @@ class ViewUserLevel extends CActiveRecord
 	 */
 	protected function afterConstruct() {
 		if(count($this->defaultColumns) == 0) {
-			$this->defaultColumns[] = array(
-				'header' => 'No',
-				'value' => '$this->grid->dataProvider->pagination->currentPage*$this->grid->dataProvider->pagination->pageSize + $row+1'
-			);
+			$this->defaultColumns[] = 'level_id';
 			$this->defaultColumns[] = 'level_name';
 			$this->defaultColumns[] = 'level_desc';
+			$this->defaultColumns[] = 'oauths';
 		}
 		parent::afterConstruct();
 	}

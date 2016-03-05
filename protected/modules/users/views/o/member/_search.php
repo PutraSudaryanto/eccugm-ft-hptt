@@ -1,19 +1,20 @@
 <?php
 /**
  * Users (users)
- * @var $this AdminController
+ * @var $this MemberController
  * @var $model Users
  * @var $form CActiveForm
  *
  * @author Putra Sudaryanto <putra.sudaryanto@gmail.com>
- * @copyright Copyright (c) 2012 Ommu Platform (ommu.co)
- * @link https://github.com/oMMu/Ommu-Users
- * @contact (+62)856-299-4114
+ * @copyright Copyright (c) 2016 Ommu Platform (ommu.co)
+ * @created date 25 February 2016, 15:47 WIB
+ * @link http://company.ommu.co
+ * @contect (+62)856-299-4114
  *
  */
 ?>
 
-<?php $form=$this->beginWidget('application.components.system.OActiveForm', array(
+<?php $form=$this->beginWidget('CActiveForm', array(
 	'action'=>Yii::app()->createUrl($this->route),
 	'method'=>'get',
 )); ?>
@@ -21,6 +22,11 @@
 		<li>
 			<?php echo $model->getAttributeLabel('user_id'); ?><br/>
 			<?php echo $form->textField($model,'user_id',array('size'=>11,'maxlength'=>11)); ?>
+		</li>
+
+		<li>
+			<?php echo $model->getAttributeLabel('source_id'); ?><br/>
+			<?php echo $form->textField($model,'source_id',array('size'=>11,'maxlength'=>11)); ?>
 		</li>
 
 		<li>
@@ -44,38 +50,13 @@
 		</li>
 
 		<li>
-			<?php echo $model->getAttributeLabel('salt'); ?><br/>
-			<?php echo $form->textField($model,'salt',array('size'=>32,'maxlength'=>32)); ?>
-		</li>
-
-		<li>
-			<?php echo $model->getAttributeLabel('first_name'); ?><br/>
-			<?php echo $form->textField($model,'first_name',array('size'=>32,'maxlength'=>32)); ?>
-		</li>
-
-		<li>
-			<?php echo $model->getAttributeLabel('last_name'); ?><br/>
-			<?php echo $form->textField($model,'last_name',array('size'=>32,'maxlength'=>32)); ?>
-		</li>
-
-		<li>
 			<?php echo $model->getAttributeLabel('displayname'); ?><br/>
 			<?php echo $form->textField($model,'displayname',array('size'=>60,'maxlength'=>64)); ?>
 		</li>
 
 		<li>
-			<?php echo $model->getAttributeLabel('photo'); ?><br/>
-			<?php echo $form->textField($model,'photo',array('size'=>60,'maxlength'=>64)); ?>
-		</li>
-
-		<li>
-			<?php echo $model->getAttributeLabel('status_id'); ?><br/>
-			<?php echo $form->textField($model,'status_id',array('size'=>11,'maxlength'=>11)); ?>
-		</li>
-
-		<li>
-			<?php echo $model->getAttributeLabel('username'); ?><br/>
-			<?php echo $form->textField($model,'username',array('size'=>32,'maxlength'=>32)); ?>
+			<?php echo $model->getAttributeLabel('photos'); ?><br/>
+			<?php echo $form->textArea($model,'photos',array('rows'=>6, 'cols'=>50)); ?>
 		</li>
 
 		<li>
@@ -89,41 +70,6 @@
 		</li>
 
 		<li>
-			<?php echo $model->getAttributeLabel('deactivate'); ?><br/>
-			<?php echo $form->textField($model,'deactivate'); ?>
-		</li>
-
-		<li>
-			<?php echo $model->getAttributeLabel('search'); ?><br/>
-			<?php echo $form->textField($model,'search'); ?>
-		</li>
-
-		<li>
-			<?php echo $model->getAttributeLabel('invisible'); ?><br/>
-			<?php echo $form->textField($model,'invisible'); ?>
-		</li>
-
-		<li>
-			<?php echo $model->getAttributeLabel('show_profile'); ?><br/>
-			<?php echo $form->textField($model,'show_profile'); ?>
-		</li>
-
-		<li>
-			<?php echo $model->getAttributeLabel('privacy'); ?><br/>
-			<?php echo $form->textField($model,'privacy'); ?>
-		</li>
-
-		<li>
-			<?php echo $model->getAttributeLabel('comments'); ?><br/>
-			<?php echo $form->textField($model,'comments'); ?>
-		</li>
-
-		<li>
-			<?php echo $model->getAttributeLabel('last_email'); ?><br/>
-			<?php echo $form->textField($model,'last_email',array('size'=>32,'maxlength'=>32)); ?>
-		</li>
-
-		<li>
 			<?php echo $model->getAttributeLabel('creation_date'); ?><br/>
 			<?php echo $form->textField($model,'creation_date'); ?>
 		</li>
@@ -131,16 +77,6 @@
 		<li>
 			<?php echo $model->getAttributeLabel('creation_ip'); ?><br/>
 			<?php echo $form->textField($model,'creation_ip',array('size'=>20,'maxlength'=>20)); ?>
-		</li>
-
-		<li>
-			<?php echo $model->getAttributeLabel('modified_date'); ?><br/>
-			<?php echo $form->textField($model,'modified_date'); ?>
-		</li>
-
-		<li>
-			<?php echo $model->getAttributeLabel('modified_id'); ?><br/>
-			<?php echo $form->textField($model,'modified_id',array('size'=>11,'maxlength'=>11)); ?>
 		</li>
 
 		<li>
@@ -153,29 +89,8 @@
 			<?php echo $form->textField($model,'lastlogin_ip',array('size'=>20,'maxlength'=>20)); ?>
 		</li>
 
-		<li>
-			<?php echo $model->getAttributeLabel('update_date'); ?><br/>
-			<?php echo $form->textField($model,'update_date'); ?>
-		</li>
-
-		<li>
-			<?php echo $model->getAttributeLabel('update_ip'); ?><br/>
-			<?php echo $form->textField($model,'update_ip',array('size'=>20,'maxlength'=>20)); ?>
-		</li>
-
-		<li>
-			<?php echo $model->getAttributeLabel('locale_id'); ?><br/>
-			<?php echo $form->textField($model,'locale_id'); ?>
-		</li>
-
-		<li>
-			<?php echo $model->getAttributeLabel('timezone_id'); ?><br/>
-			<?php echo $form->textField($model,'timezone_id'); ?>
-		</li>
-
 		<li class="submit">
-			<?php echo CHtml::submitButton('Search'); ?>
+			<?php echo CHtml::submitButton(Phrase::trans(3,0)); ?>
 		</li>
 	</ul>
-	<div class="clear"></div>
 <?php $this->endWidget(); ?>

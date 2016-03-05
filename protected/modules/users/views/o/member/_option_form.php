@@ -1,34 +1,17 @@
 <?php
 /**
  * Users (users)
- * @var $this AdminController
+ * @var $this MemberController
  * @var $model Users
  * @var $form CActiveForm
  *
  * @author Putra Sudaryanto <putra.sudaryanto@gmail.com>
- * @copyright Copyright (c) 2012 Ommu Platform (ommu.co)
- * @link https://github.com/oMMu/Ommu-Users
- * @contact (+62)856-299-4114
+ * @copyright Copyright (c) 2016 Ommu Platform (ommu.co)
+ * @created date 25 February 2016, 15:47 WIB
+ * @link http://company.ommu.co
+ * @contect (+62)856-299-4114
  *
  */
-
-	$cs = Yii::app()->getClientScript();
-$js=<<<EOP
-	$('form[name="gridoption"] :checkbox').click(function(){
-		var url = $('form[name="gridoption"]').attr('action');
-		$.ajax({
-			url: url,
-			data: $('form[name="gridoption"] :checked').serialize(),
-			success: function(response) {
-				$.fn.yiiGridView.update('users-grid', {
-					data: $('form[name="gridoption"]').serialize()
-				});
-				return false;
-			}
-		});
-	});
-EOP;
-	$cs->registerScript('grid-option', $js, CClientScript::POS_END);
 ?>
 
 <?php echo CHtml::beginForm(Yii::app()->createUrl($this->route), 'get', array(
@@ -43,10 +26,11 @@ foreach($model->metaData->columns as $key => $val) {
 }
 ?>
 <ul>
-	<?php foreach($columns as $val): ?>	<li>
+	<?php foreach($columns as $val): ?>
+	<li>
 		<?php echo CHtml::checkBox('GridColumn['.$val.']'); ?>
 		<?php echo CHtml::label($val, 'GridColumn_'.$val); ?>
 	</li>
-	<?php endforeach; ?></ul>
-<div class="clear"></div>
+	<?php endforeach; ?>
+</ul>
 <?php echo CHtml::endForm(); ?>

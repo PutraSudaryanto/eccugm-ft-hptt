@@ -6,9 +6,10 @@
  * @var $form CActiveForm
  *
  * @author Putra Sudaryanto <putra.sudaryanto@gmail.com>
- * @copyright Copyright (c) 2012 Ommu Platform (ommu.co)
- * @link https://github.com/oMMu/Ommu-Users
- * @contact (+62)856-299-4114
+ * @copyright Copyright (c) 2016 Ommu Platform (ommu.co)
+ * @created date 25 February 2016, 15:47 WIB
+ * @link http://company.ommu.co
+ * @contect (+62)856-299-4114
  *
  */
 ?>
@@ -25,10 +26,11 @@ foreach($model->metaData->columns as $key => $val) {
 }
 ?>
 <ul>
-	<?php foreach($columns as $val): ?>	<li>
+	<?php foreach($columns as $val): ?>
+	<li>
 		<?php echo CHtml::checkBox('GridColumn['.$val.']'); ?>
 		<?php echo CHtml::label($val, 'GridColumn_'.$val); ?>
 	</li>
-	<?php endforeach; ?></ul>
-<div class="clear"></div>
+	<?php endforeach; ?>
+</ul>
 <?php echo CHtml::endForm(); ?>

@@ -9,10 +9,9 @@
  *
  * TOC :
  *	Index
- *	Suggest
  *	Manage
- *	Add
  *	Edit
+ *	View
  *	Delete
  *	Enabled
  *	Verify
@@ -21,14 +20,15 @@
  *	performAjaxValidation
  *
  * @author Putra Sudaryanto <putra.sudaryanto@gmail.com>
- * @copyright Copyright (c) 2012 Ommu Platform (ommu.co)
- * @link https://github.com/oMMu/Ommu-Users
+ * @copyright Copyright (c) 2016 Ommu Platform (ommu.co)
+ * @created date 25 February 2016, 15:47 WIB
+ * @link http://company.ommu.co
  * @contect (+62)856-299-4114
  *
  *----------------------------------------------------------------------------------------------------------
  */
 
-class MemberController extends /*SBaseController*/ Controller
+class MemberController extends Controller
 {
 	/**
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
@@ -53,7 +53,7 @@ class MemberController extends /*SBaseController*/ Controller
 		} else {
 			$this->redirect(Yii::app()->createUrl('site/login'));
 		}
-	}	
+	}
 
 	/**
 	 * @return array action filters
@@ -82,9 +82,10 @@ class MemberController extends /*SBaseController*/ Controller
 				'actions'=>array('suggest'),
 				'users'=>array('@'),
 				'expression'=>'isset(Yii::app()->user->level)',
+				//'expression'=>'isset(Yii::app()->user->level) && (Yii::app()->user->level != 1)',
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('manage','add','edit','delete','enabled','verify'),
+				'actions'=>array('manage','add','edit','view','delete','enabled','verify'),
 				'users'=>array('@'),
 				'expression'=>'isset(Yii::app()->user->level) && in_array(Yii::app()->user->level, array(1,2))',
 			),
@@ -130,7 +131,7 @@ class MemberController extends /*SBaseController*/ Controller
 		echo CJSON::encode($result);
 		Yii::app()->end();
 	}
-	
+
 	/**
 	 * Manages all models.
 	 */
@@ -152,61 +153,13 @@ class MemberController extends /*SBaseController*/ Controller
 		}
 		$columns = $model->getGridColumn($columnTemp);
 
-		$this->pageTitle = Phrase::trans(16090,1);
-		$this->pageDescription = Phrase::trans(16091,1);
+		$this->pageTitle = 'Users Manage';
+		$this->pageDescription = '';
 		$this->pageMeta = '';
 		$this->render('admin_manage',array(
 			'model'=>$model,
 			'columns' => $columns,
 		));
-	}	
-	
-	/**
-	 * Creates a new model.
-	 * If creation is successful, the browser will be redirected to the 'view' page.
-	 */
-	public function actionAdd() 
-	{
-		$model=new Users;
-
-		// Uncomment the following line if AJAX validation is needed
-		$this->performAjaxValidation($model);
-
-		if(isset($_POST['Users'])) {
-			$model->attributes=$_POST['Users'];
-			$model->scenario = 'adminadd';
-
-			$jsonError = CActiveForm::validate($model);
-			if(strlen($jsonError) > 2) {
-				echo $jsonError;
-			} else {
-				if(isset($_GET['enablesave']) && $_GET['enablesave'] == 1) {
-					if($model->save()) {
-						echo CJSON::encode(array(
-							'type' => 5,
-							'get' => Yii::app()->controller->createUrl('manage'),
-							'id' => 'partial-users',
-							'msg' => '<div class="errorSummary success"><strong>'.Phrase::trans(16092,1).'</strong></div>',
-						));
-					} else {
-						print_r($model->getErrors());
-					}
-				}
-			}
-			Yii::app()->end();
-
-		} else {
-			$this->dialogDetail = true;
-			$this->dialogGroundUrl = Yii::app()->controller->createUrl('manage');
-			$this->dialogWidth = 500;
-			
-			$this->pageTitle = Phrase::trans(16093,1);
-			$this->pageDescription = '';
-			$this->pageMeta = '';
-			$this->render('admin_add',array(
-				'model'=>$model,
-			));
-		}
 	}
 
 	/**
@@ -223,11 +176,12 @@ class MemberController extends /*SBaseController*/ Controller
 
 		if(isset($_POST['Users'])) {
 			$model->attributes=$_POST['Users'];
-			$model->scenario = 'adminedit';
-
+			$model->scenario = 'edit';
+			
 			$jsonError = CActiveForm::validate($model);
 			if(strlen($jsonError) > 2) {
 				echo $jsonError;
+
 			} else {
 				if(isset($_GET['enablesave']) && $_GET['enablesave'] == 1) {
 					if($model->save()) {
@@ -235,7 +189,7 @@ class MemberController extends /*SBaseController*/ Controller
 							'type' => 5,
 							'get' => Yii::app()->controller->createUrl('manage'),
 							'id' => 'partial-users',
-							'msg' => '<div class="errorSummary success"><strong>'.Phrase::trans(16095,1).'</strong></div>',
+							'msg' => '<div class="errorSummary success"><strong>Users success updated.</strong></div>',
 						));
 					} else {
 						print_r($model->getErrors());
@@ -243,19 +197,34 @@ class MemberController extends /*SBaseController*/ Controller
 				}
 			}
 			Yii::app()->end();
-
-		} else {
-			$this->dialogDetail = true;
-			$this->dialogGroundUrl = Yii::app()->controller->createUrl('manage');
-			$this->dialogWidth = 500;
-			
-			$this->pageTitle = Phrase::trans(16094,1).': '.$model->displayname;
-			$this->pageDescription = '';
-			$this->pageMeta = '';
-			$this->render('admin_edit',array(
-				'model'=>$model,
-			));
 		}
+		
+		$this->dialogDetail = true;
+		$this->dialogGroundUrl = Yii::app()->controller->createUrl('manage');
+		$this->dialogWidth = 600;
+
+		$this->pageTitle = 'Update Users';
+		$this->pageDescription = '';
+		$this->pageMeta = '';
+		$this->render('admin_edit',array(
+			'model'=>$model,
+		));
+	}
+	
+	/**
+	 * Displays a particular model.
+	 * @param integer $id the ID of the model to be displayed
+	 */
+	public function actionView($id) 
+	{
+		$model=$this->loadModel($id);
+
+		$this->pageTitle = 'View Users';
+		$this->pageDescription = '';
+		$this->pageMeta = '';
+		$this->render('admin_view',array(
+			'model'=>$model,
+		));
 	}
 
 	/**
@@ -265,24 +234,27 @@ class MemberController extends /*SBaseController*/ Controller
 	 */
 	public function actionDelete($id) 
 	{
+		$model=$this->loadModel($id);
+		
 		if(Yii::app()->request->isPostRequest) {
 			// we only allow deletion via POST request
 			if(isset($id)) {
-				$this->loadModel($id)->delete();
-
-				echo CJSON::encode(array(
-					'type' => 5,
-					'get' => Yii::app()->controller->createUrl('manage'),
-					'id' => 'partial-users',
-					'msg' => '<div class="errorSummary success"><strong>'.Phrase::trans(16088,1).'</strong></div>',
-				));
+				if($model->delete()) {
+					echo CJSON::encode(array(
+						'type' => 5,
+						'get' => Yii::app()->controller->createUrl('manage'),
+						'id' => 'partial-users',
+						'msg' => '<div class="errorSummary success"><strong>Users success deleted.</strong></div>',
+					));
+				}
 			}
+
 		} else {
 			$this->dialogDetail = true;
 			$this->dialogGroundUrl = Yii::app()->controller->createUrl('manage');
 			$this->dialogWidth = 350;
 
-			$this->pageTitle = Phrase::trans(16089,1);
+			$this->pageTitle = 'Users Delete.';
 			$this->pageDescription = '';
 			$this->pageMeta = '';
 			$this->render('admin_delete');

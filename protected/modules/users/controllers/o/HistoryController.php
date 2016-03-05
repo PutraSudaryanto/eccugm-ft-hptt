@@ -10,10 +10,6 @@
  * TOC :
  *	Index
  *	Login
- *	Email
- *	Password
- *	Forgot
- *	Username
  *	Subscribe
  *
  *	LoadModel
@@ -84,7 +80,7 @@ class HistoryController extends Controller
 				//'expression'=>'isset(Yii::app()->user->level) && (Yii::app()->user->level != 1)',
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('login','email','password','forgot','username','subscribe'),
+				'actions'=>array('login','subscribe'),
 				'users'=>array('@'),
 				'expression'=>'isset(Yii::app()->user->level) && (Yii::app()->user->level == 1)',
 			),
@@ -139,126 +135,6 @@ class HistoryController extends Controller
 	/**
 	 * Manages all models.
 	 */
-	public function actionEmail() 
-	{
-		$model=new UserHistoryEmail('search');
-		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['UserHistoryEmail'])) {
-			$model->attributes=$_GET['UserHistoryEmail'];
-		}
-
-		$columnTemp = array();
-		if(isset($_GET['GridColumn'])) {
-			foreach($_GET['GridColumn'] as $key => $val) {
-				if($_GET['GridColumn'][$key] == 1) {
-					$columnTemp[] = $key;
-				}
-			}
-		}
-		$columns = $model->getGridColumn($columnTemp);
-
-		$this->pageTitle = Phrase::trans(16238,1);
-		$this->pageDescription = '';
-		$this->pageMeta = '';
-		$this->render('admin_history_email',array(
-			'model'=>$model,
-			'columns' => $columns,
-		));
-	}
-
-	/**
-	 * Manages all models.
-	 */
-	public function actionPassword() 
-	{
-		$model=new UserHistoryPassword('search');
-		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['UserHistoryPassword'])) {
-			$model->attributes=$_GET['UserHistoryPassword'];
-		}
-
-		$columnTemp = array();
-		if(isset($_GET['GridColumn'])) {
-			foreach($_GET['GridColumn'] as $key => $val) {
-				if($_GET['GridColumn'][$key] == 1) {
-					$columnTemp[] = $key;
-				}
-			}
-		}
-		$columns = $model->getGridColumn($columnTemp);
-
-		$this->pageTitle = Phrase::trans(16239,1);
-		$this->pageDescription = '';
-		$this->pageMeta = '';
-		$this->render('admin_history_password',array(
-			'model'=>$model,
-			'columns' => $columns,
-		));
-	}
-
-	/**
-	 * Manages all models.
-	 */
-	public function actionForgot() 
-	{
-		$model=new UserHistoryForgot('search');
-		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['UserHistoryForgot'])) {
-			$model->attributes=$_GET['UserHistoryForgot'];
-		}
-
-		$columnTemp = array();
-		if(isset($_GET['GridColumn'])) {
-			foreach($_GET['GridColumn'] as $key => $val) {
-				if($_GET['GridColumn'][$key] == 1) {
-					$columnTemp[] = $key;
-				}
-			}
-		}
-		$columns = $model->getGridColumn($columnTemp);
-
-		$this->pageTitle = Phrase::trans(16249,1);
-		$this->pageDescription = '';
-		$this->pageMeta = '';
-		$this->render('admin_history_forgot',array(
-			'model'=>$model,
-			'columns' => $columns,
-		));
-	}
-
-	/**
-	 * Manages all models.
-	 */
-	public function actionUsername() 
-	{
-		$model=new UserHistoryUsername('search');
-		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['UserHistoryUsername'])) {
-			$model->attributes=$_GET['UserHistoryUsername'];
-		}
-
-		$columnTemp = array();
-		if(isset($_GET['GridColumn'])) {
-			foreach($_GET['GridColumn'] as $key => $val) {
-				if($_GET['GridColumn'][$key] == 1) {
-					$columnTemp[] = $key;
-				}
-			}
-		}
-		$columns = $model->getGridColumn($columnTemp);
-
-		$this->pageTitle = Phrase::trans(16254,1);
-		$this->pageDescription = '';
-		$this->pageMeta = '';
-		$this->render('admin_history_username',array(
-			'model'=>$model,
-			'columns' => $columns,
-		));
-	}
-
-	/**
-	 * Manages all models.
-	 */
 	public function actionSubscribe() 
 	{
 		$model=new UserNewsletterHistory('search');
@@ -280,7 +156,7 @@ class HistoryController extends Controller
 		$this->pageTitle = Phrase::trans(16255,1);
 		$this->pageDescription = '';
 		$this->pageMeta = '';
-		$this->render('admin_history_username',array(
+		$this->render('admin_history_subscribe',array(
 			'model'=>$model,
 			'columns' => $columns,
 		));

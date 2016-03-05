@@ -2,8 +2,9 @@
 /**
  * ViewUsers
  * @author Putra Sudaryanto <putra.sudaryanto@gmail.com>
- * @copyright Copyright (c) 2015 Ommu Platform (ommu.co)
- * @link https://github.com/oMMu/Ommu-Users
+ * @copyright Copyright (c) 2016 Ommu Platform (ommu.co)
+ * @created date 24 February 2016, 17:59 WIB
+ * @link http://company.ommu.co
  * @contact (+62)856-299-4114
  *
  * This is the template for generating the model class of a specified table.
@@ -17,14 +18,11 @@
  *
  * --------------------------------------------------------------------------------------
  *
- * This is the model class for table "_view_users".
+ * This is the model class for table "_view_user_oauth".
  *
- * The followings are the available columns in table '_view_users':
+ * The followings are the available columns in table '_view_user_oauth':
  * @property string $user_id
  * @property string $level_name
- * @property string $token_key
- * @property string $token_oauth
- * @property string $photos
  */
 class ViewUsers extends CActiveRecord
 {
@@ -46,7 +44,7 @@ class ViewUsers extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return '_view_users';
+		return '_view_user_oauth';
 	}
 
 	/**
@@ -66,12 +64,10 @@ class ViewUsers extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('user_id', 'length', 'max'=>11),
-			array('token_key, token_oauth', 'length', 'max'=>32),
-			array('photos', 'length', 'max'=>21),
 			array('level_name', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('user_id, level_name, token_key, token_oauth, photos', 'safe', 'on'=>'search'),
+			array('user_id, level_name', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -83,7 +79,6 @@ class ViewUsers extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'user_relation' => array(self::BELONGS_TO, 'Users', 'user_id'),
 		);
 	}
 
@@ -95,9 +90,6 @@ class ViewUsers extends CActiveRecord
 		return array(
 			'user_id' => 'User',
 			'level_name' => 'Level Name',
-			'token_key' => 'Token Key',
-			'token_oauth' => 'Token Oauth',
-			'photos' => 'Photos',
 		);
 	}
 
@@ -118,11 +110,12 @@ class ViewUsers extends CActiveRecord
 		// @todo Please modify the following code to remove attributes that should not be searched.
 
 		$criteria=new CDbCriteria;
-		$criteria->compare('t.user_id',$this->user_id);
+
+		if(isset($_GET['user']))
+			$criteria->compare('t.user_id',$_GET['user']);
+		else
+			$criteria->compare('t.user_id',$this->user_id);
 		$criteria->compare('t.level_name',strtolower($this->level_name),true);
-		$criteria->compare('t.token_key',strtolower($this->token_key),true);
-		$criteria->compare('t.token_oauth',strtolower($this->token_oauth),true);
-		$criteria->compare('t.photos',strtolower($this->photos),true);
 
 		if(!isset($_GET['ViewUsers_sort']))
 			$criteria->order = 't.user_id DESC';
@@ -155,9 +148,6 @@ class ViewUsers extends CActiveRecord
 		} else {
 			$this->defaultColumns[] = 'user_id';
 			$this->defaultColumns[] = 'level_name';
-			$this->defaultColumns[] = 'token_key';
-			$this->defaultColumns[] = 'token_oauth';
-			$this->defaultColumns[] = 'photos';
 		}
 
 		return $this->defaultColumns;
@@ -168,15 +158,8 @@ class ViewUsers extends CActiveRecord
 	 */
 	protected function afterConstruct() {
 		if(count($this->defaultColumns) == 0) {
-			$this->defaultColumns[] = array(
-				'header' => 'No',
-				'value' => '$this->grid->dataProvider->pagination->currentPage*$this->grid->dataProvider->pagination->pageSize + $row+1'
-			);
 			$this->defaultColumns[] = 'user_id';
 			$this->defaultColumns[] = 'level_name';
-			$this->defaultColumns[] = 'token_key';
-			$this->defaultColumns[] = 'token_oauth';
-			$this->defaultColumns[] = 'photos';
 		}
 		parent::afterConstruct();
 	}
