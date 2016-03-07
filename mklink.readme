@@ -18,6 +18,7 @@ mklink /H "D:\htdocs\_client_ecc_hptt\protected\yiic.php" "D:\htdocs\_project_om
 protected\components
 =======
 mklink /H "D:\htdocs\_client_ecc_hptt\protected\components\Controller.php" "D:\htdocs\_project_ommu_platform\protected\components\Controller.php"
+mklink /H "D:\htdocs\_client_ecc_hptt\protected\components\OauthIdentity.php" "D:\htdocs\_project_ommu_platform\protected\components\OauthIdentity.php"
 mklink /H "D:\htdocs\_client_ecc_hptt\protected\components\UserIdentity.php" "D:\htdocs\_project_ommu_platform\protected\components\UserIdentity.php"
 mklink /J "D:\htdocs\_client_ecc_hptt\protected\components\admin" "D:\htdocs\_project_ommu_platform\protected\components\admin"
 mklink /J "D:\htdocs\_client_ecc_hptt\protected\components\plugin" "D:\htdocs\_project_ommu_platform\protected\components\plugin"
