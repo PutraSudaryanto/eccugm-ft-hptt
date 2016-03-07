@@ -66,10 +66,12 @@ mklink /J "D:\htdocs\_client_ecc_hptt\protected\modules\users\models" "D:\htdocs
 --
 mklink /J "D:\htdocs\_client_ecc_hptt\protected\modules\users\controllers\o" "D:\htdocs\_project_ommu_module_users\modules\users\controllers\o"
 mklink /H "D:\htdocs\_client_ecc_hptt\protected\modules\users\controllers\AdminController.php" "D:\htdocs\_project_ommu_module_users\modules\users\controllers\AdminController.php"
+mklink /H "D:\htdocs\_client_ecc_hptt\protected\modules\users\controllers\ForgotController.php" "D:\htdocs\_project_ommu_module_users\modules\users\controllers\ForgotController.php"
 mklink /H "D:\htdocs\_client_ecc_hptt\protected\modules\users\controllers\VerifyController.php" "D:\htdocs\_project_ommu_module_users\modules\users\controllers\VerifyController.php"
 --
 mklink /J "D:\htdocs\_client_ecc_hptt\protected\modules\users\views\o" "D:\htdocs\_project_ommu_module_users\modules\users\views\o"
 mklink /J "D:\htdocs\_client_ecc_hptt\protected\modules\users\views\admin" "D:\htdocs\_project_ommu_module_users\modules\users\views\admin"
+mklink /J "D:\htdocs\_client_ecc_hptt\protected\modules\users\views\forgot" "D:\htdocs\_project_ommu_module_users\modules\users\views\forgot"
 mklink /J "D:\htdocs\_client_ecc_hptt\protected\modules\users\views\verify" "D:\htdocs\_project_ommu_module_users\modules\users\views\verify"
 
 ///report\\\
