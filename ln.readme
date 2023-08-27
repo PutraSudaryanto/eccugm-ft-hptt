@@ -54,7 +54,7 @@ ln -s "/Users/putrasudaryanto/htdocs/_project_ommu_platform/protected/views" "/U
 -------
 themes
 =======
-ln -s "/Users/putrasudaryanto/htdocs/_project_ommu_bootstrap/themes/ommu" "/Users/putrasudaryanto/htdocs/_client_ecc_hptt/themes/ommu"
+ln -s "/Users/putrasudaryanto/htdocs/_project_ommu_bootstrap/themes/backoffice" "/Users/putrasudaryanto/htdocs/_client_ecc_hptt/themes/backoffice"
 
 
 -------
